@@ -1,4 +1,3 @@
-// FRASEK – povezava s Firebase (projekt frasek-14d72)
 window.FRASEK_FIREBASE = {
   apiKey: "AIzaSyCHhJm-UpT8igMnQc-adAjHHIlAXxy5T0I",
   authDomain: "frasek-14d72.firebaseapp.com",
