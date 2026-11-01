@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1c1916">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FRASEK">
+<link rel="manifest" href="manifest.webmanifest">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>FRASEK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rye&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#f5efe7; --card:#fffdf9; --soft:#ece3d7; --seg:#e7dccd;
+  --line:#dccdbb; --dash:#c9b7a2; --dash2:#e8dccd;
+  --ink:#1c1916; --muted:#66584c; --eyebrow:#a8481f; --h1:#1c1916;
+  --accent:#a8481f; --fill:#b8502a; --fill-ink:#ffffff; --btn:#1c1916; --btn-ink:#fffdf9;
+  --good:#2f6b3f; --good-soft:#dde8d8; --warn:#6b4a2e; --warn-soft:#f1e3d2; --bad:#a3281c; --bad-soft:#f3d9d3;
+  --focus:#b8502a;
+  --serif:'Rye',Georgia,'Times New Roman',serif;
+  --sans:'Instrument Sans','Segoe UI',Helvetica,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+  color-scheme:dark;
+  --ground:#1c1916; --card:#25201c; --soft:#302924; --seg:#2c2621;
+  --line:#40372f; --dash:#564a40; --dash2:#352d27;
+  --ink:#f6efe6; --muted:#b9ab9c; --eyebrow:#e88a5c; --h1:#f6efe6;
+  --accent:#ec8a5d; --fill:#e07042; --fill-ink:#1c1916; --btn:#e07042; --btn-ink:#1c1916;
+  --good:#8fc49b; --good-soft:#1d3024; --warn:#e3c3a6; --warn-soft:#352a21; --bad:#ff8f80; --bad-soft:#40201b;
+  --focus:#ec8a5d;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#1c1916; --card:#25201c; --soft:#302924; --seg:#2c2621;
+  --line:#40372f; --dash:#564a40; --dash2:#352d27;
+  --ink:#f6efe6; --muted:#b9ab9c; --eyebrow:#e88a5c; --h1:#f6efe6;
+  --accent:#ec8a5d; --fill:#e07042; --fill-ink:#1c1916; --btn:#e07042; --btn-ink:#1c1916;
+  --good:#8fc49b; --good-soft:#1d3024; --warn:#e3c3a6; --warn-soft:#352a21; --bad:#ff8f80; --bad-soft:#40201b;
+  --focus:#ec8a5d;
+}
+*{box-sizing:border-box}
+html,body{background:var(--ground)}
+body{color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45;padding-inline:16px;padding-block:0 48px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.num{font-variant-numeric:tabular-nums}
+.serif{font-family:var(--serif)}
+.numf{font-family:var(--sans);font-weight:700}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--eyebrow);font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+h1,h2,h3{font-family:var(--serif);margin:0;text-wrap:balance;font-weight:400;letter-spacing:.02em}
+.serif,.big,.v,b.serif{font-weight:400}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.1;color:var(--h1);font-weight:400}
+h2{font-size:22px}
+h3{font-size:17px}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);margin-inline:-16px;padding:12px 16px 0;border-bottom:1px solid var(--line)}
+.top-in{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px}
+.brand{display:flex;align-items:baseline;gap:8px;margin-right:auto;padding-bottom:10px}
+.brand{align-items:center!important}.brand img{width:44px;height:44px;border-radius:50%;flex:none}
+.brand b{font-family:var(--serif);font-size:24px;font-weight:400;color:var(--ink);letter-spacing:.04em;line-height:1}
+.brand small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--eyebrow);font-weight:700;margin-top:3px}
+.brand span{font-size:12px;color:var(--muted)}
+.theme-btn{width:40px;height:40px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px;order:3}
+
+.nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav button{border:0;background:none;min-height:44px;padding:0 12px;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-size:14px}
+.nav button[aria-current="page"]{color:var(--ink);font-weight:700;border-bottom-color:var(--accent)}
+.banner{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 14px;font-size:13px}
+
+/* cards & tiles */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card.flat{background:transparent;border-style:dashed}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.between{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+.tile .k{font-size:12px;color:var(--muted)}
+.tile .v{font-family:var(--sans);font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .s{font-size:12px;color:var(--muted)}
+.tile.hero{background:var(--fill);border-color:var(--fill);color:var(--fill-ink)}
+.tile.hero .k,.tile.hero .s{color:var(--fill-ink);opacity:.9}
+.tile.good .v{color:var(--good)} .tile.bad .v{color:var(--bad)}
+
+/* buttons & inputs */
+.btn{min-height:44px;padding:0 16px;border-radius:10px;border:0;background:var(--btn);color:var(--btn-ink);font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn.quiet{background:var(--soft);color:var(--ink)}
+.btn.danger{background:var(--bad);color:#fff}
+.btn.sm{min-height:36px;padding:0 12px;font-size:13px;border-radius:8px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.icon-btn{width:40px;height:40px;border-radius:8px;border:1px solid transparent;background:none;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.icon-btn:hover{border-color:var(--line);color:var(--bad)}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);min-width:0}
+.in{width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;background:var(--card);padding:0 10px;color:var(--ink);font-size:15px}
+textarea.in{padding:10px;min-height:96px;resize:vertical;line-height:1.45}
+.in.num-in{text-align:right;font-variant-numeric:tabular-nums}
+.in.cell{min-height:36px;border-color:transparent;background:transparent;padding:0 6px}
+.in.cell:hover{border-color:var(--dash)}
+.in.cell:focus{border-color:var(--accent);background:var(--card)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:560px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tiles>:last-child:nth-child(odd){grid-column:1/-1}}
+.seg{display:flex;background:var(--seg);border-radius:999px;padding:4px;gap:4px}
+.seg button{flex:1;min-height:40px;border:0;border-radius:999px;background:none;color:var(--muted);cursor:pointer;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--fill);color:var(--fill-ink);font-weight:600}
+
+/* tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs button{border:0;background:none;min-height:44px;padding:0 12px;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-size:14px}
+.tabs button[aria-selected="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--accent)}
+
+/* butcher-slip table */
+.tw{overflow-x:auto;margin-inline:-4px}
+table.slip{width:100%;border-collapse:collapse;font-size:14px}
+table.slip th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--eyebrow);font-weight:600;text-align:left;padding:8px 6px;border-bottom:1px dashed var(--dash);white-space:nowrap}
+table.slip td{padding:8px 6px;border-bottom:1px dashed var(--dash2);vertical-align:middle}
+table.slip tr:last-child td{border-bottom:0}
+table.slip .r{text-align:right}
+table.slip .big{font-family:var(--sans);font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.slip tfoot td{border-top:1px solid var(--ink);border-bottom:0;padding-top:10px}
+.nm{font-weight:600}
+.sub{font-size:12px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--eyebrow);border:0;cursor:pointer;white-space:nowrap}
+.chip.hint{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+
+.pick{min-height:38px;padding:0 12px;border-radius:99px;border:1px dashed var(--dash);background:transparent;color:var(--muted);cursor:pointer;font-size:14px}
+.pick.check svg{display:none;margin-right:6px}.pick.check[aria-pressed="true"] svg{display:inline}
+.pick{display:inline-flex;align-items:center}
+.pick[aria-pressed="true"]{background:var(--fill);border:1px solid var(--fill);color:var(--fill-ink);font-weight:600}
+.qgroup{display:grid;grid-template-columns:90px minmax(0,1fr);gap:10px;align-items:start}
+.qlabel{font-size:13px;color:var(--eyebrow);font-weight:600;padding-top:9px}
+.qtable td{padding:10px 4px}.qtable th{padding-inline:4px}
+.qtable td:nth-child(-n+3){min-width:140px}.qtable td:nth-child(n+4){width:90px}
+@media (max-width:700px){
+  .qtable thead{display:none}
+  .qtable tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .qtable td{padding:0;border:0!important;min-width:0!important;width:auto!important}
+  .qtable td:first-child{grid-column:1/-1}
+  .qtable td::before{content:attr(data-l);display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+  .qgroup{grid-template-columns:minmax(0,1fr);gap:4px}.qlabel{padding-top:0}
+}
+/* dumb-proof */
+.btn.big{min-height:56px;font-size:17px;padding:0 22px;border-radius:12px}
+.ev1{max-width:640px;margin:0 auto;width:100%}
+.title-in{font-family:var(--serif);font-size:22px;font-weight:700;min-height:52px}
+.steppers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:560px){.steppers{grid-template-columns:minmax(0,1fr)}}
+.stepper label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.stepper-in{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.stepper-in .in{border:0;border-radius:0;text-align:center;font-family:var(--sans);font-size:22px;font-weight:700;min-height:52px;min-width:0}
+.stp{width:52px;flex:none;border:0;background:var(--soft);color:var(--ink);font-size:24px;cursor:pointer}
+.stp:active{background:var(--seg)}
+.menu-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.menu-card{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;min-height:72px;padding:12px 14px;border-radius:12px;border:1px dashed var(--dash);background:transparent;color:var(--ink);cursor:pointer}
+.menu-card b{font-family:var(--serif);font-size:17px}
+.menu-card span{font-size:13px;color:var(--muted)}
+.menu-card[aria-pressed="true"]{background:var(--fill);border:1px solid var(--fill);color:var(--fill-ink)}
+.menu-card[aria-pressed="true"] span{color:var(--fill-ink);opacity:.9}
+.price-big{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:6px 0}
+.price-big>span:first-child{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--eyebrow);font-weight:600}
+.price-big b{font-family:var(--sans);font-size:clamp(40px,10vw,56px);line-height:1.05;color:var(--accent);font-variant-numeric:tabular-nums}
+.bigbtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:420px){.bigbtns{grid-template-columns:minmax(0,1fr)}}
+details.card.flat summary h2{font-size:18px}
+@media (max-width:640px){
+  .cat-table thead{display:none}
+  .cat-table tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) 44px;gap:4px 8px;padding:10px 0;border-bottom:1px dashed var(--dash2)}
+  .cat-table td{border:0!important;padding:0!important;text-align:left!important}
+  .cat-table td:first-child{grid-column:1/3}
+  .cat-table td:last-child{grid-column:3;grid-row:1}
+  .cat-table td[data-l]:not(:first-child)::before{content:attr(data-l);display:block;font-size:11px;color:var(--muted)}
+  .cat-table td:first-child .in{font-weight:600}
+  .cat-table td .row{justify-content:flex-start!important}
+  .cat-table td:nth-child(2){grid-column:1;grid-row:2}
+  .cat-table td:nth-child(4){grid-column:2/-1;grid-row:2}
+  .cat-table td:nth-child(3){grid-column:1/-1;grid-row:3}
+  .cat-table td:nth-child(2) .in{width:auto}
+}
+/* checklist */
+.checklist{display:flex;flex-direction:column;gap:14px}
+.cl-group{display:flex;flex-direction:column}
+.cl-cat{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--eyebrow);font-weight:600;padding-bottom:4px;border-bottom:1px dashed var(--dash)}
+.cl-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:12px;min-height:50px;padding:6px 4px;border:0;border-bottom:1px dashed var(--dash2);background:none;color:var(--ink);text-align:left;cursor:pointer;font-size:16px;width:100%}
+.cl-row:hover{background:var(--soft)}
+.cl-box{width:26px;height:26px;border-radius:7px;border:2px solid var(--dash);display:inline-flex;align-items:center;justify-content:center;color:transparent}
+.cl-row[aria-pressed="true"] .cl-box{background:var(--fill);border-color:var(--fill);color:var(--fill-ink)}
+.cl-row[aria-pressed="true"] .cl-name{font-weight:600}
+.cl-row[aria-pressed="false"] .cl-name{color:var(--muted)}
+.cl-price{font-family:var(--sans);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cl-row[aria-pressed="false"] .cl-price{color:var(--muted);font-weight:500;font-family:var(--sans);font-size:14px}
+.pricebar{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:4;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--fill);color:var(--fill-ink);border-radius:14px;padding:12px 18px;box-shadow:0 8px 24px rgba(20,12,9,.25)}
+.pricebar span{display:block;font-size:12px;opacity:.9}
+.pricebar b{font-family:var(--sans);font-size:26px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pricebar .pb-r{text-align:right}.pricebar .pb-r b{font-size:18px}
+/* simple event */
+.tiles3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:560px){.tiles3{grid-template-columns:repeat(2,minmax(0,1fr))}.tiles3>.hero{grid-column:1/-1}.tiles3>:last-child:nth-child(odd){grid-column:auto}}
+.evbody{max-width:820px}
+.stepn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:99px;background:var(--fill);color:var(--fill-ink);font-family:var(--sans);font-size:13px;font-weight:700;margin-right:10px;vertical-align:2px}
+.sub-details{border-top:1px dashed var(--dash);padding-top:10px}
+.sub-details summary{cursor:pointer;font-weight:600;font-size:14px;min-height:32px;display:flex;align-items:center;gap:6px}
+.sub-details summary .muted{font-weight:400}
+.sub-details[open] summary{margin-bottom:8px}
+.linkbtn{border:0;background:none;color:var(--accent);font-weight:600;text-decoration:underline;cursor:pointer;padding:0}
+/* per-person strip */
+.pp-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:4px}
+.pp-strip>div{background:var(--soft);padding:10px 12px;display:flex;flex-direction:column;min-width:0}
+.pp-strip>div:first-child{background:var(--fill);color:var(--fill-ink)}
+.pp-strip .k{font-size:12px;opacity:.85}
+.pp-strip b{font-family:var(--sans);font-size:22px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pp-strip .s{font-size:12px;opacity:.8}
+@media (max-width:420px){.pp-strip b{font-size:18px}}
+/* date picker */
+.datebtn{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden}
+.datebtn svg{flex:none;color:var(--muted)}
+#dp-back{position:fixed;inset:0;z-index:30;background:rgba(20,12,9,.25)}
+#dp{position:fixed;z-index:31;width:300px;max-width:calc(100vw - 32px);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 12px 36px rgba(20,12,9,.25);display:flex;flex-direction:column;gap:10px}
+#dp[hidden],#dp-back[hidden]{display:none}
+.dp-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dp-head b{font-family:var(--serif);font-size:17px;text-transform:capitalize}
+.dp-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;text-align:center}
+.dp-grid .wd{font-size:11px;color:var(--eyebrow);letter-spacing:.06em;padding:4px 0;font-weight:600}
+.dp-day{height:38px;border:0;border-radius:8px;background:none;color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.dp-day:hover{background:var(--soft)}
+.dp-day.out{color:var(--muted);opacity:.45}
+.dp-day.today{box-shadow:inset 0 0 0 1px var(--dash)}
+.dp-day[aria-pressed="true"]{background:var(--fill);color:var(--fill-ink);font-weight:700}
+.dp-foot{display:flex;gap:8px;justify-content:space-between;align-items:center}
+.dp-foot .row{flex-wrap:nowrap}.dp-foot .btn{padding:0 10px}
+@media (max-width:560px){#dp{left:16px!important;right:16px;top:auto!important;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:auto;max-width:none}}
+/* status pills */
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.st-povprasevanje{background:var(--soft);color:var(--eyebrow)}
+.st-ponudba{background:var(--warn-soft);color:var(--warn)}
+.st-potrjeno{background:var(--fill);color:var(--fill-ink)}
+.st-izvedeno{background:var(--seg);color:var(--ink)}
+.st-obracunano{background:var(--good-soft);color:var(--good)}
+
+/* events list */
+.evlist{display:flex;flex-direction:column}
+.evrow{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 4px;border-bottom:1px dashed var(--dash);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;text-align:left;width:100%;color:inherit}
+.evrow:hover{background:var(--soft)}
+.evdate{font-family:var(--sans);font-weight:700;text-align:center;line-height:1}
+.evdate b{display:block;font-size:26px}
+.evdate span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.evmoney{text-align:right}
+.evmoney b{font-family:var(--sans);font-size:18px;font-variant-numeric:tabular-nums}
+
+/* layout for event */
+.evgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+.side{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px)}
+@media (max-width:900px){.evgrid{grid-template-columns:minmax(0,1fr)}.side{position:static}}
+.total-line{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px dashed var(--dash2);gap:10px}
+.total-line:last-child{border-bottom:0}
+.total-line.strong{border-top:2px solid var(--ink);border-bottom:0;padding-top:10px;margin-top:4px}
+.total-line .v{font-family:var(--sans);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.total-line.strong .v{font-size:24px}
+.ai{background:var(--soft);border-radius:14px;padding:16px}
+.ai .out{white-space:pre-wrap}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--btn);color:var(--btn-ink);padding:10px 16px;border-radius:10px;font-size:14px;z-index:20;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+details.card summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:28px}
+details.card summary::-webkit-details-marker{display:none}
+details.card[open] summary{margin-bottom:12px}
+@media (prefers-reduced-motion:no-preference){.btn,.chip,.evrow{transition:background-color .15s,opacity .15s}}
+
+
+/* advanced */
+.adv-btn{height:36px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:0 12px;font-size:13px;font-weight:600;order:2;margin-bottom:8px}
+.adv-btn[aria-pressed="true"]{background:var(--fill);border-color:var(--fill);color:var(--fill-ink)}
+.adv-zone{border-top:1px dashed var(--dash);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.adv-zone.grid2{display:grid}
+.adv-card{border-style:dashed}
+@media (max-width:700px){.adv-btn{margin-bottom:0;padding:0 10px}.adv-btn span{display:none}.adv-btn{width:40px;justify-content:center;padding:0}}
+.brand>div{min-width:0}
+.brand small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:700px){.qty-table th:nth-child(3),.qty-table td:nth-child(3),.qty-table th:nth-child(5),.qty-table td:nth-child(5){display:none}.brand small{font-size:9px;letter-spacing:.08em}}
+
+/* live sales */
+.incl{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--accent)}
+.calc-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:6px 0;border-bottom:1px dashed var(--dash2);font-size:15px}
+.calc-line b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.calc-line.total{border-bottom:0;border-top:2px solid var(--ink);padding-top:10px;font-weight:600}
+.calc-line.total b{font-size:20px}
+.adv-title{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--eyebrow);font-weight:700;padding:8px 2px 0;border-top:1px dashed var(--dash)}
+.more-link{border:1px dashed var(--dash);background:none;color:var(--muted);border-radius:12px;min-height:48px;cursor:pointer;font-size:14px}
+.title-in{text-align:left}
+.login{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px}
+.login img{width:120px;height:120px;border-radius:50%}
+.login .btn{min-width:240px}
+/* ===== phone ===== */
+@media (max-width:700px){
+  body{padding-block:0 calc(96px + env(safe-area-inset-bottom,0px))}
+  .top{padding:10px 16px 8px}
+  .top-in{flex-wrap:nowrap}
+  .brand{padding-bottom:0}
+  .brand img{width:38px;height:38px}
+  .brand b{font-size:21px}
+  .theme-btn{margin-bottom:0;order:3}
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:15;order:9;width:auto;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -6px 18px rgba(0,0,0,.18)}
+  .nav button{min-height:60px;font-size:15px;border-bottom:0;border-top:3px solid transparent}
+  .nav button[aria-current="page"]{border-top-color:var(--accent);color:var(--accent);border-bottom-color:transparent}
+  .wrap{gap:14px}
+  .card{padding:14px}
+  .in{font-size:16px}
+  .steppers{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .stepper label{font-size:12px;text-align:center}
+  .stp{width:34px;font-size:20px}
+  .stepper-in .in{font-size:19px;min-height:48px;padding:0 2px}
+  .menu-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .menu-card{min-height:64px;padding:10px 12px}
+  .menu-card b{font-size:15px}
+  .cl-row{min-height:52px;font-size:16px}
+  .price-big b{font-size:44px}
+  .pricebar{bottom:calc(70px + env(safe-area-inset-bottom,0px));padding:10px 14px}
+  .pricebar b{font-size:24px}
+  .toast{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+  #dp{bottom:calc(76px + env(safe-area-inset-bottom,0px))!important}
+  .btn.big{min-height:54px}
+  h1{font-size:28px}
+}
+@media (max-width:360px){
+  .stp{width:28px}
+  .stepper-in .in{font-size:17px}
+}
+</style>
+
+</head>
+<body>
+<div id="app" aria-live="polite"><div class="wrap" style="padding-top:40px"><p class="muted">Nalagam …</p></div></div>
+<div id="toast" class="toast" hidden></div>
+<div id="dp-back" hidden></div><div id="dp" role="dialog" aria-modal="true" aria-label="Izbira datuma" hidden></div>
+
+<script>
+(() => {
+'use strict';
+/* ---------- constants ---------- */
+const CATS = { meso:'Meso', priloge:'Priloge', pijaca:'Pijača', drugo:'Drugo' };
+const UNITS = { kg:'kg', kos:'kos', l:'l', kgm:'kg' };
+const UNIT_LABELS = { kg:'g', kos:'kos', l:'l', kgm:'kg/kg mesa' };
+const UNIT_OPTS = { kg:'kg / os', kos:'kos / os', l:'l / os', kgm:'kg / kg mesa' };
+const normP = p => { if(p.cat==='oglje'){ p.cat='drugo'; p.unit='kgm'; } p.perMeat = p.unit==='kgm'; return p; };
+const STATUS = { povprasevanje:'Povpraševanje', ponudba:'Ponudba poslana', potrjeno:'Potrjeno', izvedeno:'Izvedeno', obracunano:'Obračunano' };
+const APPETITE = { lahek:'Lahek', obicajen:'Običajen', lacni:'Lačni' };
+const DEFAULT_SETTINGS = {
+  company:'', signature:'', markupPct:35, reservePct:8, childFactor:0.5, childPriceFactor:0.5,
+  vatFood:9.5, vatDrinks:22, appetite:{ lahek:0.85, obicajen:1, lacni:1.2 }
+};
+const EXTRA_SUGGEST = ['Delo (ure × urna postavka)','Prevoz','Najem opreme','Plin / elektrika','Embalaža'];
+
+/* ---------- state ---------- */
+const S = {
+  settings: structuredClone(DEFAULT_SETTINGS),
+  catalog:{}, suppliers:{}, events:{}, menus:{},
+  view: loadView(), mode:'loading', loaded:{events:false,catalog:false,suppliers:false,settings:false,menus:false},
+  ui:{ confirm:null, aiBusy:false, aiErr:'', offerBusy:false }
+};
+let db=null, sample=null, downloads=null;
+const pending = new Map();       // "col/id" -> timer
+let lastInput = 0, renderTimer = null;
+
+function loadView(){ try{ const v=JSON.parse(localStorage.getItem('pt-view')||'null'); if(v&&v.name) return v; }catch(e){} return {name:'events'}; }
+function saveView(){ try{ localStorage.setItem('pt-view', JSON.stringify(S.view)); }catch(e){} }
+
+/* ---------- theme ---------- */
+function isDark(){ const t=document.documentElement.dataset.theme; if(t) return t==='dark'; return window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches; }
+function applyTheme(t){ if(t) document.documentElement.dataset.theme=t; }
+try{ applyTheme(localStorage.getItem('pt-theme')||'dark'); }catch(e){ applyTheme('dark'); }
+try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>scheduleRender()); }catch(e){}
+
+/* ---------- helpers ---------- */
+const $app = document.getElementById('app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = v => { if (typeof v === 'number') return Number.isFinite(v) ? v : 0; const x = parseFloat(String(v ?? '').replace(/\s/g,'').replace(',','.')); return Number.isFinite(x) ? x : 0; };
+const nf = (n,d=1) => Number.isFinite(n) ? n.toLocaleString('sl-SI',{minimumFractionDigits:d,maximumFractionDigits:d}) : '–';
+const eur = n => Number.isFinite(n) ? n.toLocaleString('sl-SI',{style:'currency',currency:'EUR'}) : '–';
+const inVal = n => (n === null || n === undefined || n === '') ? '' : String(n).replace('.',',');
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const today = () => new Date().toISOString().slice(0,10);
+const qty = (n,unit) => unit === 'kos' ? nf(n,0)+' kos' : nf(n,1)+' '+(UNITS[unit]||unit);
+const clone = o => JSON.parse(JSON.stringify(o));
+function fmtDate(d){ if(!d) return 'brez datuma'; const t=new Date(d+'T12:00:00'); if(isNaN(t)) return d; return t.toLocaleDateString('sl-SI',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+function gppLabel(p){ if(p.unit==='kgm'||p.cat==='oglje') return 'kg / kg mesa'; return p.unit==='kg' ? 'g / os' : (p.unit==='kos' ? 'kos / os' : 'l / os'); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>{t.hidden=true},2200); }
+
+/* ---------- storage layer ---------- */
+const COLS = ['events','catalog','suppliers','menus'];
+function localPersist(){ try{ localStorage.setItem('pt-local', JSON.stringify({settings:S.settings,catalog:S.catalog,suppliers:S.suppliers,events:S.events,menus:S.menus})); }catch(e){} }
+const SEED={"catalog": {"p_bedra": {"bonePct": 25, "cat": "meso", "gpp": 120, "name": "Piščančja bedra", "pack": 2, "price": 6.5, "unit": "kg"}, "p_kranjska": {"bonePct": 0, "cat": "meso", "gpp": 1, "name": "Kranjska klobasa", "pack": 0, "price": 2.2, "unit": "kos"}, "p_vrat": {"bonePct": 0, "cat": "meso", "gpp": 150, "name": "Svinjski vrat", "pack": 0, "price": 8.9, "unit": "kg"}, "p_cevap": {"bonePct": 0, "cat": "meso", "gpp": 120, "name": "Čevapčiči", "pack": 0, "price": 9.5, "unit": "kg"}, "p_kruh": {"bonePct": 0, "cat": "priloge", "gpp": 100, "name": "Kruh", "pack": 0, "price": 2.8, "unit": "kg"}, "p_krompir": {"bonePct": 0, "cat": "priloge", "gpp": 150, "name": "Krompirjeva solata", "pack": 0, "price": 3.2, "unit": "kg"}, "p_rebra": {"bonePct": 40, "cat": "meso", "gpp": 200, "name": "Svinjska rebrca", "pack": 0, "price": 7.9, "unit": "kg"}, "p_sok": {"bonePct": 0, "cat": "pijaca", "gpp": 0.75, "name": "Sokovi in voda", "pack": 0, "price": 1.1, "unit": "l"}, "p_pivo": {"bonePct": 0, "cat": "pijaca", "gpp": 1, "name": "Pivo (sod)", "pack": 50, "price": 3, "unit": "l"}, "p_oglje": {"bonePct": 0, "cat": "drugo", "gpp": 0.5, "name": "Oglje", "pack": 10, "price": 1.6, "unit": "kgm"}, "p_ajvar": {"bonePct": 0, "cat": "priloge", "gpp": 40, "name": "Ajvar in omake", "pack": 0, "price": 6, "unit": "kg"}, "p_zelenjava": {"bonePct": 0, "cat": "priloge", "gpp": 120, "name": "Zelenjava za žar", "pack": 0, "price": 3.5, "unit": "kg"}, "p_raznjic": {"bonePct": 0, "cat": "meso", "gpp": 120, "name": "Ražnjiči", "pack": 0, "price": 11.5, "unit": "kg"}}, "menus": {}, "settings": {"advanced": false, "appetite": {"lacni": 1.2, "lahek": 0.85, "obicajen": 1}, "childFactor": 0.5, "childPriceFactor": 0.5, "company": "", "markupPct": 35, "reservePct": 8, "signature": "", "vatDrinks": 22, "vatFood": 9.5}, "events": {}, "suppliers": {}};
+function localLoad(){ try{ const d=JSON.parse(localStorage.getItem('pt-local')||'null')||SEED; if(d){ Object.assign(S, {settings:{...clone(DEFAULT_SETTINGS),...d.settings}, catalog:d.catalog||{}, suppliers:d.suppliers||{}, events:d.events||{}, menus:d.menus||{}}); } }catch(e){} }
+
+function saveLater(col,id,delay=500){
+  const key=col+'/'+id;
+  clearTimeout(pending.get(key));
+  pending.set(key, setTimeout(()=>flush(col,id), delay));
+}
+async function flush(col,id){
+  const key=col+'/'+id; pending.delete(key);
+  const data = col==='settings' ? S.settings : S[col][id];
+  if(!db){ localPersist(); return; }
+  try{ if(data) await db.collection(col).doc(id).set(clone(data)); }
+  catch(e){ handleDbError(e); }
+}
+async function removeDoc(col,id){
+  delete S[col][id];
+  if(!db){ localPersist(); return; }
+  try{ await db.collection(col).doc(id).delete(); }catch(e){ handleDbError(e); }
+}
+function handleDbError(e){
+  if(e && e.code==='permission-denied'){ showLogin('Račun '+(S.user&&S.user.email||'')+' nima dostopa. Prosi lastnika, da te doda.', true); return; }
+  if(e && e.code==='quota_exceeded') toast('Shramba je polna – izbriši stare dogodke.');
+  else if(e && e.code==='unavailable') toast('Shranjevanje trenutno ne gre – poskusi znova čez trenutek.');
+  else toast('Shranjevanje ni uspelo.');
+}
+
+let fbAuth=null;
+function fbConfigured(){ const c=window.FRASEK_FIREBASE; return !!(c&&c.apiKey&&!/VPI/.test(c.apiKey)&&window.firebase); }
+function showLogin(msg,signedIn){
+  $app.innerHTML=`<div class="login"><img src="icon-192.png" alt="FRAS BBQ"><h1>FRASEK</h1><p class="muted">Kalkulacije menijev za FRAS BBQ</p>
+  ${signedIn?`<button type="button" class="btn big" data-act="logout">Odjava</button>`:`<button type="button" class="btn big" data-act="login">Prijava z Google</button>`}
+  ${msg?`<p class="small" style="color:var(--bad);max-width:34ch">${esc(msg)}</p>`:''}</div>`;
+}
+function getFirebaseDb(){
+  if(!fbConfigured()) return Promise.resolve(null);
+  firebase.initializeApp(window.FRASEK_FIREBASE);
+  fbAuth=firebase.auth();
+  return new Promise(res=>{
+    fbAuth.getRedirectResult().catch(e=>showLogin('Prijava ni uspela: '+(e.message||e.code)));
+    let done=false;
+    fbAuth.onAuthStateChanged(async u=>{
+      if(!u){ showLogin(); return; }
+      if(done) return; done=true; S.user=u;
+      const fs=firebase.firestore();
+      try{ await fs.enablePersistence({synchronizeTabs:true}); }catch(e){}
+      try{
+        const c=await fs.collection('catalog').limit(1).get();
+        if(c.empty){ const b=fs.batch(); Object.entries(SEED.catalog).forEach(([id,d])=>b.set(fs.collection('catalog').doc(id),d)); b.set(fs.doc('settings/main'),SEED.settings); await b.commit(); }
+      }catch(e){ if(e.code==='permission-denied'){ showLogin('Račun '+u.email+' nima dostopa. Prosi lastnika, da te doda.', true); return; } }
+      res(fs);
+    });
+  });
+}
+async function boot(){
+  try{ db = await getFirebaseDb(); }catch(e){ db=null; }
+  if(!db){ S.mode='local'; localLoad(); S.loaded={events:true,catalog:true,suppliers:true,settings:true,menus:true}; render(); }
+  else {
+    S.mode='db';
+    COLS.forEach(col=>{
+      db.collection(col).onSnapshot(snap=>{
+        const next={};
+        snap.docs.forEach(d=>{
+          const key=col+'/'+d.id;
+          next[d.id] = pending.has(key) && S[col][d.id] ? S[col][d.id] : clone(d.data());
+        });
+        // keep local docs that are still waiting to be written
+        for(const [key] of pending){ const [c,id]=key.split('/'); if(c===col && S[col][id] && !next[id]) next[id]=S[col][id]; }
+        S[col]=next; S.loaded[col]=true; scheduleRender();
+      }, err=>{ S.loaded[col]=true; handleDbError(err); scheduleRender(); });
+    });
+    db.doc('settings/main').onSnapshot(snap=>{
+      if(!pending.has('settings/main')){
+        const d = snap.exists ? snap.data() : {};
+        S.settings = {...clone(DEFAULT_SETTINGS), ...clone(d||{}), appetite:{...DEFAULT_SETTINGS.appetite, ...((d&&d.appetite)||{})}};
+      }
+      S.loaded.settings=true; scheduleRender();
+    }, err=>{ S.loaded.settings=true; scheduleRender(); });
+    render();
+  }
+  try{ sample = await window.claude?.use?.('sample') ?? null; }catch(e){ sample=null; }
+  try{ downloads = await window.claude?.use?.('downloads') ?? null; }catch(e){ downloads=null; }
+  scheduleRender();
+}
+
+/* ---------- calculations ---------- */
+function prodOf(it){
+  const live = S.catalog[it.pid];
+  const p = {...(it.snap||{}), ...(live||{})};
+  p.exists = !!live;
+  p.cat = p.cat || 'meso'; p.unit = p.unit || 'kg';
+  return normP(p);
+}
+function suggestion(p){
+  const h = (p.history||[]).filter(x=>Number.isFinite(x.v) && x.v>0);
+  if(!h.length) return null;
+  const avg = h.reduce((a,x)=>a+x.v,0)/h.length;
+  return { v: p.unit==='kg' ? Math.round(avg/5)*5 : Math.round(avg*100)/100, n:h.length };
+}
+function calc(ev){
+  const st=S.settings;
+  const apF = num((st.appetite||{})[ev.appetite||'obicajen'] ?? 1) || 1;
+  const adults=num(ev.adults), kids=num(ev.children), veg=Math.min(num(ev.vegetarians), adults);
+  const cf=num(st.childFactor);
+  const meatP = Math.max(0, adults-veg) + kids*cf;
+  const allP = adults + kids*cf;
+  const reservePct = (ev.reservePct===undefined||ev.reservePct===null||ev.reservePct==='') ? num(st.reservePct) : num(ev.reservePct);
+  const R = 1 + reservePct/100;
+  const lines=[]; let meatKg=0;
+  const items = ev.items||[];
+  const build = (it,i) => {
+    const p = prodOf(it);
+    const gpp = (it.gpp===undefined||it.gpp===null||it.gpp==='') ? num(p.gpp) : num(it.gpp);
+    const bone = num(p.bonePct);
+    let persons=0, factor=1, need=0;
+    if(p.perMeat){ need = meatKg * gpp; }
+    else {
+      persons = p.cat==='meso' ? meatP : allP;
+      factor = (p.cat==='meso'||p.cat==='priloge') ? apF : 1;
+      if(p.unit==='kg') need = gpp*factor*persons*(1+bone/100)/1000*R;
+      else need = gpp*factor*persons*R;
+    }
+    const pack = num(p.pack);
+    let order;
+    if(pack>0) order = Math.ceil(need/pack - 1e-9)*pack;
+    else if(p.unit==='kos') order = Math.ceil(need - 1e-9);
+    else order = Math.ceil(need*10 - 1e-9)/10;
+    if(need<=0) order=0;
+    const price=num(p.price);
+    const l = { i, it, p, name:p.name||'(izbrisan artikel)', cat:p.cat, unit:p.perMeat?'kg':p.unit, perMeat:p.perMeat, gpp, bone, persons, factor, need, order, pack, price, cost:order*price, supplierId:p.supplierId||'' };
+    if(p.cat==='meso' && p.unit==='kg') meatKg += need;
+    return l;
+  };
+  items.forEach((it,i)=>{ if(!prodOf(it).perMeat) lines[i]=build(it,i); });
+  items.forEach((it,i)=>{ if(prodOf(it).perMeat) lines[i]=build(it,i); });
+  const foodCost = lines.reduce((a,l)=>a+l.cost,0);
+  const drinksCost = lines.filter(l=>l.cat==='pijaca').reduce((a,l)=>a+l.cost,0);
+  const extras = (ev.extras||[]).reduce((a,x)=>a+num(x.amount),0);
+  const totalCost = foodCost + extras;
+  const billing = adults + kids*num(st.childPriceFactor);
+  const pr = ev.pricing||{};
+  const mode = (pr.mode==='perGuest' && num(pr.perGuest)>0) ? 'perGuest' : 'auto';
+  const markup = num(st.markupPct), mk=1+markup/100;
+  let suggested = perPerson(items,apF).cost*mk;
+  const menu = ev.menuId && S.menus[ev.menuId];
+  if(menu && num(menu.price)>0){
+    const mItems=(menu.items||[]).filter(x=>S.catalog[x.pid]);
+    suggested = num(menu.price) + (perPerson(items,apF).cost - perPerson(mItems).cost)*mk;
+  }
+  suggested=Math.max(0,suggested);
+  const neto = (mode==='perGuest' ? num(pr.perGuest) : suggested)*billing;
+  const drinkShare = totalCost>0 ? drinksCost/totalCost : 0;
+  const vatRate = (drinkShare*num(st.vatDrinks) + (1-drinkShare)*num(st.vatFood))/100;
+  const vat = neto*vatRate;
+  const profit = neto-totalCost;
+  const bySup = {};
+  lines.forEach(l=>{ if(!l) return; (bySup[l.supplierId] ||= []).push(l); });
+  const meatOrderKg = lines.filter(l=>l && l.cat==='meso' && l.unit==='kg').reduce((a,l)=>a+l.order,0);
+  const meatPieces = lines.filter(l=>l && l.cat==='meso' && l.unit==='kos').reduce((a,l)=>a+l.order,0);
+  return { adults,kids,veg,meatP,allP,reservePct,apF,lines,meatKg,meatOrderKg,meatPieces,foodCost,drinksCost,extras,totalCost,billing,mode,markup,neto,vat,vatRate,bruto:neto+vat,profit,
+    marginOfPrice: neto>0 ? profit/neto : 0, markupReal: totalCost>0 ? profit/totalCost : 0,
+    perGuest: billing>0 ? neto/billing : 0, costPerGuest: billing>0 ? totalCost/billing : 0, suggested, bySup };
+}
+
+/* ---------- text builders ---------- */
+function orderText(ev,c,supId){
+  const sup=S.suppliers[supId]; const st=S.settings;
+  const rows=(c.bySup[supId]||[]).filter(l=>l.order>0);
+  const pick=(ev.pickup||{})[supId]||'';
+  let t=`Pozdravljeni${sup&&sup.contactName?' '+sup.contactName:''},\n\nza dogodek ${ev.date?fmtDate(ev.date):''} bi naročil/a:\n`;
+  rows.forEach(l=>{ t+=`• ${l.name}: ${qty(l.order,l.unit)}${l.pack>0?` (${nf(l.order/l.pack,0)} × ${qty(l.pack,l.unit)})`:''}\n`; });
+  if(pick) t+=`\nPrevzem / dostava: ${pick}\n`;
+  t+=`\nHvala in lep pozdrav,\n${st.signature||st.company||''}`;
+  return t.trim();
+}
+function menuText(c){
+  const by={}; c.lines.forEach(l=>{ if(l && l.order>0 && !l.perMeat) (by[l.cat] ||= []).push(l.name); });
+  return Object.keys(CATS).filter(k=>by[k]).map(k=>`${CATS[k]}: ${by[k].join(', ')}`).join('\n');
+}
+function menuBlock(ev,c){
+  const m=ev.menuId&&S.menus[ev.menuId];
+  const names=it=>prodOf(it).name;
+  const its=(ev.items||[]).filter(it=>!prodOf(it).perMeat);
+  if(!m) return ['Meni:', menuText(c)];
+  const set=new Set((m.items||[]).map(x=>x.pid));
+  const inc=its.filter(it=>set.has(it.pid)).map(names), add=its.filter(it=>!set.has(it.pid)).map(names);
+  return [`Meni: ${m.name}`, inc.length?`V meniju: ${inc.join(', ')}`:'', add.length?`Dodatno: ${add.join(', ')}`:''];
+}
+function offerText(ev,c){
+  const st=S.settings;
+  return [
+    `PONUDBA – ${ev.name||'dogodek'}`,
+    ev.client?`Naročnik: ${ev.client}`:'', `Datum: ${fmtDate(ev.date)}`, ev.location?`Lokacija: ${ev.location}`:'',
+    `Gostje: ${c.adults} odraslih${c.kids?`, ${c.kids} otrok`:''}${c.veg?` (od tega ${c.veg} brez mesa)`:''}`,
+    '', ...menuBlock(ev,c), '',
+    `Cena na osebo: ${eur(c.perGuest)} + DDV (${eur(c.perGuest*(1+c.vatRate))} z DDV)`,
+    c.kids?`Cena na otroka: ${eur(c.billing>0?c.neto/c.billing*num(st.childPriceFactor):0)} + DDV`:'',
+    `Skupaj brez DDV: ${eur(c.neto)}`, `DDV: ${eur(c.vat)}`, `Skupaj z DDV: ${eur(c.bruto)}`,
+    '', st.signature||st.company||''
+  ].filter((x,i,a)=>x!=='' || (a[i-1]!=='' )).join('\n').trim();
+}
+
+/* ---------- render ---------- */
+function scheduleRender(){
+  clearTimeout(renderTimer);
+  const typing = document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && (Date.now()-lastInput<1500);
+  renderTimer = setTimeout(render, typing ? 450 : 30);
+}
+function render(){
+  const a=document.activeElement; let focus=null;
+  if(a && a.id && $app.contains(a)){ focus={id:a.id, val:a.value, s:a.selectionStart, e:a.selectionEnd, type:a.type}; }
+  const sy=window.scrollY;
+  $app.innerHTML = topBar() + `<div class="wrap" style="padding-top:18px">${banner()}${viewBody()}</div>`;
+  if(focus){
+    const el=document.getElementById(focus.id);
+    if(el){ if(el.tagName!=='SELECT' && focus.type!=='checkbox' && (Date.now()-lastInput<1500)) el.value=focus.val; el.focus({preventScroll:true}); try{ if(focus.s!=null) el.setSelectionRange(focus.s,focus.e); }catch(e){} }
+  }
+  window.scrollTo(0,sy);
+}
+function banner(){ return '';
+  if(S.mode==='local') return `<div class="banner">Skupno shranjevanje tu ni na voljo – podatki ostanejo samo v tem brskalniku.</div>`;
+  return '';
+}
+function topBar(){
+  const n=S.view.name==='event'?'events':S.view.name;
+  const b=(k,l)=>`<button type="button" data-act="nav" data-to="${k}" ${n===k?'aria-current="page"':''}>${l}</button>`;
+  return `<header class="top"><div class="top-in"><div class="brand"><img src="data:image/webp;base64,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" alt="FRAS BBQ"><div><b>FRASEK</b><small>Slovenian roots. Texas soul.</small></div></div>
+  <nav class="nav" aria-label="Glavni meni">${b('events','Dogodki')}${b('menus','Meniji')}${b('catalog','Cenik')}</nav>
+  <button type="button" class="adv-btn" data-act="adv" aria-pressed="${!!S.settings.advanced}" title="Več možnosti"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span>Več</span></button>
+  <button type="button" class="theme-btn" data-act="theme" aria-label="${isDark()?'Preklopi na svetlo':'Preklopi na temno'}" title="${isDark()?'Svetlo':'Temno'}">${isDark()
+    ?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
+    :'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'}</button></div></header>`;
+}
+function viewBody(){
+  const allLoaded = Object.values(S.loaded).every(Boolean);
+  if(!allLoaded) return `<p class="muted">Nalagam podatke …</p>`;
+  switch(S.view.name){
+    case 'event': return S.events[S.view.id] ? eventView(S.events[S.view.id]) : eventsView();
+    case 'menus': return menusView();
+    case 'catalog': return catalogView();
+    default: return eventsView();
+  }
+}
+
+/* ----- events list ----- */
+function eventsView(){
+  const evs=Object.entries(S.events).map(([id,e])=>({id,e,c:calc(e)}));
+  evs.sort((a,b)=>(a.e.date||'9999').localeCompare(b.e.date||'9999'));
+  const t=today();
+  const up=evs.filter(x=>(x.e.date||'9999')>=t), past=evs.filter(x=>(x.e.date||'9999')<t).reverse();
+  const row=x=>{
+    const d=x.e.date?new Date(x.e.date+'T12:00:00'):null;
+    return `<button type="button" class="evrow" data-act="open" data-id="${x.id}">
+      <div class="evdate">${d&&!isNaN(d)?`<b>${d.getDate()}</b><span>${d.toLocaleDateString('sl-SI',{month:'short'})}</span>`:'<span>—</span>'}</div>
+      <div style="min-width:0"><div class="nm serif" style="font-size:18px">${esc(x.e.name||'Brez imena')}</div>
+      <div class="sub">${x.c.adults+x.c.kids} gostov${x.e.menuId&&S.menus[x.e.menuId]?' · '+esc(S.menus[x.e.menuId].name):''}</div>${S.settings.advanced?`<span class="pill st-${x.e.status||'povprasevanje'}" style="margin-top:4px">${STATUS[x.e.status||'povprasevanje']}</span>`:''}</div>
+      <div class="evmoney"><b>${eur(x.c.perGuest*(1+x.c.vatRate))}</b><div class="sub">na osebo</div></div></button>`;
+  };
+  const adv=!!S.settings.advanced;
+  const live=evs.filter(x=>['potrjeno','izvedeno','obracunano'].includes(x.e.status));
+  const rev=live.reduce((a,x)=>a+x.c.neto,0), prof=live.reduce((a,x)=>a+x.c.profit,0);
+  const open=evs.filter(x=>['povprasevanje','ponudba'].includes(x.e.status||'povprasevanje'));
+  return `
+  <button type="button" class="btn big" data-act="newEvent">+ Nov dogodek</button>
+  ${adv?`<div class="tiles"><div class="tile"><div class="k">Prihajajoči</div><div class="v">${up.length}</div></div><div class="tile"><div class="k">Odprte ponudbe</div><div class="v">${open.length}</div></div><div class="tile"><div class="k">Potrjeno brez DDV</div><div class="v">${eur(rev)}</div></div><div class="tile hero"><div class="k">Zaslužek</div><div class="v">${eur(prof)}</div></div></div>`:''}
+  <section class="card"><h2>Prihajajoči</h2><div class="evlist">${up.length?up.map(row).join(''):`<div class="empty">Ni dogodkov. Klikni »+ Nov dogodek«.</div>`}</div></section>
+  ${past.length?`<details class="card flat"><summary><h2>Pretekli (${past.length})</h2></summary><div class="evlist">${past.map(row).join('')}</div></details>`:''}`;
+}
+
+/* ----- event: one simple page ----- */
+function stepper(id,f,label,val){
+  return `<div class="stepper"><label for="${id}">${label}</label><div class="stepper-in">
+    <button type="button" class="stp" data-act="step" data-f="${f}" data-d="-1" aria-label="${label} manj">−</button>
+    <input id="${id}" class="in num-in" inputmode="numeric" data-k="ev.${f}" value="${inVal(val||0)}">
+    <button type="button" class="stp" data-act="step" data-f="${f}" data-d="1" aria-label="${label} več">+</button></div></div>`;
+}
+function liveList(ev,c){
+  const items=ev.items||[], apF=c.apF, mk=1+num(S.settings.markupPct)/100;
+  const inEv=new Set(items.map(x=>x.pid));
+  const m=ev.menuId&&S.menus[ev.menuId];
+  const menuSet=new Set(m?(m.items||[]).map(x=>x.pid).filter(pid=>S.catalog[pid]):[]);
+  const vf=1+c.vatRate;
+  const sell=(pid)=>{ const has=items.some(it=>it.pid===pid); const w=has?items:[...items,{pid}], wo=items.filter(it=>it.pid!==pid); return (perPerson(w,apF).cost-perPerson(wo,apF).cost)*mk*(1+vatOf(S.catalog[pid])); };
+  const row=(pid,label)=>{ const p=S.catalog[pid]; const on=inEv.has(pid);
+    return `<button type="button" class="cl-row" aria-pressed="${on}" data-act="evPick" data-id="${pid}"><span class="cl-box">${CHECK}</span><span class="cl-name">${esc(p.name)}</span><span class="cl-price">${label(on)}</span></button>`; };
+  let html='';
+  if(m){
+    const inMenu=[...menuSet].sort((a,b)=>Object.keys(CATS).indexOf(normP({...S.catalog[a]}).cat)-Object.keys(CATS).indexOf(normP({...S.catalog[b]}).cat));
+    html+=`<div class="cl-group"><div class="cl-cat">V meniju »${esc(m.name)}«</div>${inMenu.map(pid=>row(pid,on=>on?'<span class="incl">vključeno</span>':`<span class="muted">− ${eur(sell(pid))}</span>`)).join('')}</div>`;
+  }
+  const rest=Object.keys(CATS).map(cat=>{
+    const ps=Object.entries(S.catalog).filter(([pid,p])=>!menuSet.has(pid)&&normP({...p}).cat===cat).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+    if(!ps.length) return '';
+    return `<div class="cl-group"><div class="cl-cat">${m?'Dodatno · ':''}${CATS[cat]}</div>${ps.map(([pid])=>row(pid,on=>`${on?'':'+ '}${eur(sell(pid))}`)).join('')}</div>`;
+  }).join('');
+  return html+rest;
+}
+function eventView(ev){
+  const id=S.view.id, c=calc(ev), st=S.settings, pr=ev.pricing||{}, adv=!!st.advanced;
+  const items=ev.items||[], mk=1+num(st.markupPct)/100, vf=1+c.vatRate;
+  const menus=Object.entries(S.menus).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+  const m=ev.menuId&&S.menus[ev.menuId];
+  const menuSet=new Set(m?(m.items||[]).map(x=>x.pid):[]);
+  const added=items.filter(it=>!menuSet.has(it.pid));
+  const addedPP = m ? (perPerson(items,c.apF).cost - perPerson(items.filter(it=>menuSet.has(it.pid)),c.apF).cost)*mk : 0;
+  const fixed=c.mode==='perGuest';
+  const ppBr=c.perGuest*vf, baseBr=Math.max(0,(c.suggested-addedPP))*vf, addBr=addedPP*vf;
+  const noGuests=!c.adults&&!c.kids, noItems=!items.length;
+  const orders=orderRows(c);
+  const qtyRows=c.lines.map(l=>{ if(!l) return ''; const sg=!l.perMeat?suggestion(l.p):null;
+    const hint=sg&&l.gpp>0&&Math.abs(sg.v-l.gpp)/l.gpp>0.05?` <button type="button" class="chip hint" data-act="applyItemSug" data-i="${l.i}" data-v="${sg.v}">predlog ${inVal(sg.v)}</button>`:'';
+    return `<tr><td class="nm">${esc(l.name)}${hint}</td><td class="r"><input id="gpp-${l.i}" class="in cell num-in" style="width:76px" inputmode="decimal" aria-label="Na osebo ${esc(l.name)}" data-k="item.gpp" data-i="${l.i}" value="${inVal(l.gpp)}"><div class="sub">${gppLabel(l.p)}</div></td><td class="r num">${qty(l.need,l.unit)}</td><td class="r"><span class="big">${qty(l.order,l.unit)}</span></td><td class="r num muted">${eur(l.cost)}</td></tr>`;}).join('');
+  const extras=(ev.extras||[]).map((x,i)=>`<div class="row" style="gap:6px;flex-wrap:nowrap"><input id="ex-l-${i}" class="in" style="flex:2" aria-label="Opis stroška" placeholder="npr. delo" data-k="extra.label" data-i="${i}" value="${esc(x.label||'')}"><input id="ex-a-${i}" class="in num-in" style="flex:1" inputmode="decimal" aria-label="Znesek v evrih" placeholder="€" data-k="extra.amount" data-i="${i}" value="${inVal(x.amount)}"><button type="button" class="icon-btn" aria-label="Odstrani strošek" data-act="rmExtra" data-i="${i}">${X_ICON}</button></div>`).join('');
+  const a=ev.after||{items:{}};
+  const afterRows=c.lines.map(l=>{ if(!l||l.perMeat||l.order<=0) return ''; const x=(a.items||{})[l.i]||{};
+    return `<tr><td class="nm">${esc(l.name)}<div class="sub">naročeno ${qty(l.order,l.unit)}</div></td><td class="r"><input id="left-${l.i}" class="in cell num-in" style="width:80px" inputmode="decimal" aria-label="Ostalo ${esc(l.name)}" placeholder="0" data-k="after.left" data-i="${l.i}" value="${inVal(x.left)}"><div class="sub">ostalo ${l.unit}</div></td><td class="r"><label class="row" style="gap:6px;justify-content:flex-end" for="out-${l.i}"><input id="out-${l.i}" type="checkbox" data-k="after.out" data-i="${l.i}" ${x.out?'checked':''} style="width:20px;height:20px"> zmanjkalo</label></td></tr>`;}).join('');
+
+  return `
+  <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+    <button type="button" class="btn sm quiet" data-act="nav" data-to="events">← Nazaj</button>
+    ${S.ui.confirm==='ev:'+id?`<div class="row" style="flex-wrap:nowrap"><span class="small">Izbrišem?</span><button type="button" class="btn sm danger" data-act="delEvent" data-id="${id}">Da</button><button type="button" class="btn sm quiet" data-act="cancelConfirm">Ne</button></div>`:`<button type="button" class="btn sm quiet" data-act="askConfirm" data-key="ev:${id}">Izbriši</button>`}
+  </div>
+
+  <div class="ev1 stack">
+  <section class="card stack">
+    <input id="ev-name" class="in title-in" aria-label="Ime dogodka ali stranke" data-k="ev.name" placeholder="Ime dogodka / stranke" value="${esc(ev.name==='Nov dogodek'?'':ev.name||'')}">
+    <div class="steppers">${stepper('ev-adults','adults','Odrasli',ev.adults)}${stepper('ev-kids','children','Otroci',ev.children)}${stepper('ev-veg','vegetarians','Brez mesa',ev.vegetarians)}</div>
+    ${adv?`<div class="adv-zone"><span class="small muted">Apetit</span><div class="seg" role="group" aria-label="Apetit">${Object.entries(APPETITE).map(([k,l])=>`<button type="button" aria-pressed="${(ev.appetite||'obicajen')===k}" data-act="appetite" data-v="${k}">${l} <span class="small">×${inVal(st.appetite[k])}</span></button>`).join('')}</div></div>`:''}
+  </section>
+
+  <section class="card stack"><h3>1 · Osnovni meni</h3>
+    <div class="menu-cards">${menus.map(([mid,mm])=>{ const mp=menuPrice(mm); return `<button type="button" class="menu-card" aria-pressed="${ev.menuId===mid}" data-act="evMenu" data-v="${mid}"><b>${esc(mm.name||'Meni')}</b><span>${eur(mp.bruto)} / os</span></button>`;}).join('')}
+      <button type="button" class="menu-card" aria-pressed="${!m}" data-act="evMenu" data-v="custom"><b>Po meri</b><span>brez menija</span></button></div>
+    ${!menus.length?'<p class="small muted" style="margin:0">Osnovne menije pripraviš v zavihku Meniji.</p>':''}
+  </section>
+
+  <section class="card stack"><h3>2 · ${m?'Dodatki po želji':'Izberi jedi'}</h3>
+    ${Object.keys(S.catalog).length?`<div class="checklist">${liveList(ev,c)}</div>`:'<p class="small muted">Cenik je prazen – najprej dodaj jedi v Cenik.</p>'}
+  </section>
+
+  <section class="card stack price-card">
+    ${noGuests||noItems?`<div class="banner">${noGuests?'Vpiši število gostov. ':''}${noItems?'Izberi meni.':''}</div>`:''}
+    <div class="price-big"><span>Cena na osebo</span><b>${eur(ppBr)}</b><span class="muted">z DDV</span></div>
+    ${m&&!fixed?`<div class="calc-line"><span>Meni ${esc(m.name)}</span><b>${eur(baseBr)}</b></div><div class="calc-line"><span>Dodatki (${added.length})</span><b>${addBr>=0?'+ ':'− '}${eur(Math.abs(addBr))}</b></div>`:''}
+    <div class="calc-line total"><span>Skupaj za ${c.adults+c.kids} gostov${c.kids?` <span class="small muted">(otrok ${Math.round(num(st.childPriceFactor)*100)} %)</span>`:''}</span><b>${eur(c.bruto)}</b></div>
+    <button type="button" class="btn big" data-act="copyOffer" ${noItems?'disabled':''}>Kopiraj ponudbo za stranko</button>
+  </section>
+
+  <div class="pricebar" aria-live="polite"><div><span>Na osebo z DDV</span><b>${eur(ppBr)}</b></div><div class="pb-r"><span>${m&&!fixed&&added.length?`${eur(baseBr)} + ${eur(addBr)}`:`${c.adults+c.kids} gostov`}</span><b>${eur(c.bruto)}</b></div></div>
+
+  <details class="card" ${!ev.date&&!ev.client&&ev.name?'':''}><summary><h3>Stranka in datum</h3><span class="small muted">${esc([ev.client,ev.date?fmtDate(ev.date):''].filter(Boolean).join(' · ')||'dodaj')}</span></summary>
+    <div class="stack"><div class="grid2">
+      <label class="f" for="ev-date"><span>Datum</span><button type="button" id="ev-date" class="in datebtn" data-act="dp" data-t="ev" aria-haspopup="dialog">${ev.date?esc(fmtDate(ev.date)):'<span class="muted">Izberi datum</span>'}${CAL_ICON}</button></label>
+      <label class="f" for="ev-client"><span>Naročnik / telefon</span><input id="ev-client" class="in" data-k="ev.client" value="${esc(ev.client||'')}"></label>
+      ${adv?`<label class="f" for="ev-loc"><span>Lokacija</span><input id="ev-loc" class="in" data-k="ev.location" value="${esc(ev.location||'')}"></label>
+      <label class="f" for="ev-status"><span>Status</span><select id="ev-status" class="in" data-k="ev.status">${Object.entries(STATUS).map(([k,l])=>`<option value="${k}" ${(ev.status||'povprasevanje')===k?'selected':''}>${l}</option>`).join('')}</select></label>`:''}
+    </div>
+    <label class="f" for="ev-notes"><span>Opombe</span><textarea id="ev-notes" class="in" style="min-height:70px" data-k="ev.notes">${esc(ev.notes||'')}</textarea></label></div>
+  </details>
+
+  ${adv?`
+  <div class="adv-title">Več – samo zate</div>
+  <section class="card stack adv-card"><h3>Obračun</h3>
+    <div><div class="total-line"><span>Hrana & pijača</span><span class="v">${eur(c.foodCost)}</span></div>
+      <div class="total-line"><span>Dodatni stroški</span><span class="v">${eur(c.extras)}</span></div>
+      <div class="total-line"><span>Skupaj stroški</span><span class="v">${eur(c.totalCost)}</span></div>
+      <div class="total-line"><span>Strošek na osebo</span><span class="v">${eur(c.costPerGuest)}</span></div>
+      <div class="total-line"><span>Cena brez DDV</span><span class="v">${eur(c.neto)}</span></div>
+      <div class="total-line"><span>DDV (${nf(c.vatRate*100,1)} %)</span><span class="v">${eur(c.vat)}</span></div>
+      <div class="total-line strong"><span>Zaslužek · marža</span><span class="v" style="color:${c.profit<0?'var(--bad)':'var(--good)'}">${eur(c.profit)} · ${nf(c.marginOfPrice*100,0)} %</span></div></div>
+    ${c.profit<0?`<div class="banner" style="background:var(--bad-soft);color:var(--bad)">Pod stroški! Izguba ${eur(-c.profit)}.</div>`:''}
+    <label class="f" for="pr-guest"><span>Svoja cena na osebo brez DDV (prazno = izračun)</span><input id="pr-guest" class="in num-in" inputmode="decimal" data-k="pr.perGuest" placeholder="${inVal(Math.round(c.suggested*100)/100)}" value="${fixed?inVal(pr.perGuest):''}"></label>
+    ${fixed?`<button type="button" class="linkbtn" data-act="useSuggested" style="align-self:flex-start">Nazaj na izračun (${eur(c.suggested)})</button>`:''}
+    <div class="sub-details" style="padding-top:10px"><div class="small" style="font-weight:600;margin-bottom:8px">Dodatni stroški</div><div class="stack" style="gap:8px">${extras}<button type="button" class="btn sm quiet" style="align-self:flex-start" data-act="addExtra" data-l="">+ Dodaj strošek</button></div></div>
+  </section>
+  ${qtyRows?`<section class="card stack adv-card"><div class="between"><h3>Količine</h3><span class="small muted">${nf(c.meatOrderKg,1)} kg mesa</span></div>
+    <div class="tw"><table class="slip qty-table"><thead><tr><th>Jed</th><th class="r">Na osebo</th><th class="r">Potrebno</th><th class="r">Naročilo</th><th class="r">Strošek</th></tr></thead><tbody>${qtyRows}</tbody></table></div></section>`:''}
+  ${orders.length?`<section class="card stack adv-card"><div class="between"><h3>Naročilo</h3><button type="button" class="btn sm ghost" data-act="copyList">Kopiraj</button></div>
+    <div class="tw"><table class="slip"><tbody>${orders.map(l=>`<tr><td class="nm">${esc(l.name)}${l.pack>0?`<div class="sub">pakiranje ${qty(l.pack,l.unit)}</div>`:''}</td><td class="r"><span class="big">${qty(l.order,l.unit)}</span></td><td class="r num muted">${eur(l.cost)}</td></tr>`).join('')}</tbody><tfoot><tr><td colspan="2">Skupaj</td><td class="r"><span class="big">${eur(orders.reduce((a,l)=>a+l.cost,0))}</span></td></tr></tfoot></table></div></section>`:''}
+  <section class="card stack adv-card"><div class="between"><h3>Besedilo ponudbe</h3>${ev.offerText?`<button type="button" class="linkbtn" data-act="resetOffer">Ponovno sestavi</button>`:''}</div>
+    <textarea id="offer-txt" class="in" rows="10" data-k="ev.offerText">${esc(ev.offerText||offerText(ev,c))}</textarea></section>
+  ${afterRows?`<section class="card stack adv-card"><h3>Po dogodku</h3><p class="small muted" style="margin:0">Vpiši ostanke – naslednjič bodo količine bolj točne.</p>
+    <div class="tw"><table class="slip"><tbody>${afterRows}</tbody></table></div>
+    <button type="button" class="btn sm" style="align-self:flex-start" data-act="learn">${a.learnedAt?'Posodobi':'Shrani'}</button></section>`:''}
+  `:`<button type="button" class="more-link" data-act="adv">Več možnosti (obračun, naročilo, količine) →</button>`}
+  </div>`;
+}
+function listText(rows){ return rows.filter(l=>l.order>0).map(l=>`${l.name} – ${qty(l.order,l.unit)}`).join('\n'); }
+function orderRows(c){ const order=Object.keys(CATS); return c.lines.filter(l=>l&&l.order>0).sort((x,y)=>order.indexOf(x.cat)-order.indexOf(y.cat)); }
+
+/* ----- checklist ----- */
+const CHECK='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>';
+function vatOf(p){ const st=S.settings; return (normP({...p}).cat==='pijaca'?num(st.vatDrinks):num(st.vatFood))/100; }
+function ppDelta(items,pid,apF=1){
+  const has=items.some(it=>it.pid===pid);
+  if(has) return perPerson(items,apF).by[pid]||0;
+  const without=items.filter(it=>it.pid!==pid);
+  const withIt=has?items:[...items,{pid}];
+  return perPerson(withIt,apF).cost-perPerson(without,apF).cost;
+}
+function checklist(items,attrs,apF=1){
+  const set=new Set(items.map(x=>x.pid)); const mk=1+num(S.settings.markupPct)/100;
+  return Object.keys(CATS).map(cat=>{
+    const ps=Object.entries(S.catalog).filter(([,p])=>normP({...p}).cat===cat).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+    if(!ps.length) return '';
+    return `<div class="cl-group"><div class="cl-cat">${CATS[cat]}</div>${ps.map(([pid,p])=>{ const on=set.has(pid); const d=ppDelta(items,pid,apF)*mk*(1+vatOf(p));
+      return `<button type="button" class="cl-row" aria-pressed="${on}" ${attrs(pid)}><span class="cl-box">${CHECK}</span><span class="cl-name">${esc(p.name)}</span><span class="cl-price">${on?'':'+ '}${eur(d)}</span></button>`;}).join('')}</div>`;
+  }).join('');
+}
+
+/* ----- menus ----- */
+function perPerson(items,apF=1){
+  const st=S.settings, R=1+num(st.reservePct)/100; let meatKg=0, cost=0, drinks=0;
+  const ps=(items||[]).map(it=>({it,p:prodOf(it)})).filter(x=>x.p.exists);
+  const g=(it,p)=>(it.gpp===undefined||it.gpp===null||it.gpp==='')?num(p.gpp):num(it.gpp);
+  const by={};
+  ps.forEach(({it,p})=>{ if(p.perMeat) return; const af=(p.cat==='meso'||p.cat==='priloge')?apF:1; const need=(p.unit==='kg'? g(it,p)*(1+num(p.bonePct)/100)/1000*R : g(it,p)*R)*af; if(p.cat==='meso'&&p.unit==='kg') meatKg+=need; const c=need*num(p.price); cost+=c; by[it.pid]=c; if(p.cat==='pijaca') drinks+=c; });
+  ps.forEach(({it,p})=>{ if(p.perMeat){ const c=meatKg*g(it,p)*num(p.price); cost+=c; by[it.pid]=c; } });
+  const ds=cost>0?drinks/cost:0;
+  return { cost, by, vatRate:(ds*num(st.vatDrinks)+(1-ds)*num(st.vatFood))/100 };
+}
+function menuPrice(m){
+  const pp=perPerson(m.items), fixed=num(m.price)>0;
+  const neto=fixed?num(m.price):pp.cost*(1+num(S.settings.markupPct)/100);
+  return { ...pp, fixed, neto, bruto:neto*(1+pp.vatRate), suggested:pp.cost*(1+num(S.settings.markupPct)/100), margin: neto>0?(neto-pp.cost)/neto:0 };
+}
+function menusView(){
+  const list=Object.entries(S.menus).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+  const cards=list.map(([id,m])=>{
+    const sel=new Set((m.items||[]).map(it=>it.pid)); const mp=menuPrice(m); const confirm=S.ui.confirm==='menu:'+id;
+    const groups=checklist(m.items||[],pid=>`data-act="menuPick" data-id="${id}" data-pid="${pid}"`);
+    return `<section class="card stack">
+      <div class="between"><label class="f" for="m-n-${id}" style="flex:1;min-width:200px"><span>Ime menija</span><input id="m-n-${id}" class="in serif" style="font-size:18px;font-weight:700" data-k="menu.name" data-id="${id}" value="${esc(m.name||'')}"></label>
+        ${confirm?`<div class="row"><button type="button" class="btn sm danger" data-act="delMenu" data-id="${id}">Izbriši</button><button type="button" class="btn sm quiet" data-act="cancelConfirm">Prekliči</button></div>`:`<button type="button" class="btn sm quiet" data-act="askConfirm" data-key="menu:${id}">Izbriši</button>`}</div>
+      ${groups?`<details class="sub-details"><summary>Jedi v meniju <span class="muted">· ${(m.items||[]).filter(x=>S.catalog[x.pid]).length} izbranih</span></summary><div class="checklist">${groups}</div></details>`:'<p class="small muted">Cenik je prazen.</p>'}
+      <div class="grid2" style="align-items:end">
+        <label class="f" for="m-p-${id}"><span>Cena na osebo brez DDV (prazno = predlog)</span><input id="m-p-${id}" class="in num-in" inputmode="decimal" data-k="menu.price" data-id="${id}" placeholder="${inVal(Math.round(mp.suggested*100)/100)}" value="${inVal(m.price)}"></label>
+        <div class="tiles" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+          <div class="tile"><div class="k">Strošek / os</div><div class="v">${eur(mp.cost)}</div></div>
+          <div class="tile hero"><div class="k">Cena / os z DDV</div><div class="v">${eur(mp.bruto)}</div></div>
+        </div></div>
+    </section>`;}).join('');
+  return `<div class="between"><h1>Meniji</h1><button type="button" class="btn" data-act="newMenu">+ Nov meni</button></div>
+  <p class="small muted" style="margin:0;max-width:70ch">Sestavi glavne menije. Pri dogodku izbereš meni in nato samo odkljukaš ali dodaš jedi – cena na osebo se sproti prišteje.</p>
+  ${cards||'<div class="card empty">Ni menijev. Dodaj prvega.</div>'}`;
+}
+function applyMenu(ev,mid){
+  const m=S.menus[mid]; if(!m) return;
+  const items=(m.items||[]).filter(it=>S.catalog[it.pid]).map(it=>({...itemFromPid(it.pid), ...(it.gpp!=null&&it.gpp!==''?{gpp:it.gpp}:{})}));
+  ev.menuId=mid; ev.items=items; ev.after=undefined;
+  ev.cats=[...new Set(items.map(it=>prodOf(it).cat))];
+  ev.pricing = {mode:'auto'};
+}
+function menuModified(ev){
+  const m=S.menus[ev.menuId]; if(!m) return false;
+  const a=(m.items||[]).map(x=>x.pid).filter(pid=>S.catalog[pid]).sort().join(), b=(ev.items||[]).map(x=>x.pid).sort().join();
+  return a!==b;
+}
+
+/* ----- catalog ----- */
+function catalogView(){
+  const list=Object.entries(S.catalog).sort((a,b)=>(Object.keys(CATS).indexOf(normP({...a[1]}).cat)-Object.keys(CATS).indexOf(normP({...b[1]}).cat)) || (a[1].name||'').localeCompare(b[1].name||''));
+  const st=S.settings;
+  const rows=list.map(([id,p])=>{
+    normP(p); const confirm=S.ui.confirm==='cat:'+id;
+    return `<tr>
+    <td data-l="Jed"><input id="c-n-${id}" class="in cell" style="min-width:140px" aria-label="Ime" data-k="cat.name" data-id="${id}" value="${esc(p.name||'')}"></td>
+    <td data-l="Vrsta"><select id="c-c-${id}" class="in cell" aria-label="Vrsta" data-k="cat.cat" data-id="${id}">${Object.entries(CATS).map(([k,l])=>`<option value="${k}" ${p.cat===k?'selected':''}>${l}</option>`).join('')}</select></td>
+    <td class="r" data-l="Na osebo"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:flex-end"><input id="c-g-${id}" class="in cell num-in" style="width:70px" inputmode="decimal" aria-label="Na osebo" data-k="cat.gpp" data-id="${id}" value="${inVal(p.gpp)}"><select id="c-u-${id}" class="in cell" style="width:auto" aria-label="Enota" data-k="cat.unit" data-id="${id}">${Object.entries(UNIT_LABELS).map(([k,l])=>`<option value="${k}" ${p.unit===k?'selected':''}>${l}</option>`).join('')}</select></div></td>
+    <td class="r" data-l="Nabavna cena"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:flex-end"><input id="c-p-${id}" class="in cell num-in" style="width:76px" inputmode="decimal" aria-label="Nabavna cena" data-k="cat.price" data-id="${id}" value="${inVal(p.price)}"><span class="sub">€/${p.perMeat?'kg':UNITS[p.unit]}</span></div></td>
+    ${S.settings.advanced?`<td class="r" data-l="Kost +%"><input id="c-b-${id}" class="in cell num-in" style="width:60px" inputmode="decimal" aria-label="Kost %" placeholder="0" data-k="cat.bonePct" data-id="${id}" value="${inVal(p.bonePct||'')}"></td><td class="r" data-l="Pakiranje"><input id="c-k-${id}" class="in cell num-in" style="width:64px" inputmode="decimal" aria-label="Pakiranje" placeholder="—" data-k="cat.pack" data-id="${id}" value="${inVal(p.pack||'')}"></td>`:''}
+    <td class="r">${confirm?`<button type="button" class="btn sm danger" data-act="delCat" data-id="${id}">Izbriši</button>`:`<button type="button" class="icon-btn" aria-label="Izbriši ${esc(p.name)}" data-act="askConfirm" data-key="cat:${id}">${X_ICON}</button>`}</td></tr>`;}).join('');
+  const f=(id,k,l,v)=>`<label class="f" for="${id}"><span>${l}</span><input id="${id}" class="in num-in" inputmode="decimal" data-k="set.${k}" value="${inVal(v)}"></label>`;
+  return `<div class="between"><h1>Cenik</h1><button type="button" class="btn" data-act="newCat">+ Nova jed</button></div>
+  <section class="card"><div class="tw"><table class="slip cat-table"><thead><tr><th>Jed / artikel</th><th>Vrsta</th><th class="r">Koliko na osebo</th><th class="r">Nabavna cena</th>${S.settings.advanced?'<th class="r">Kost +%</th><th class="r">Pakiranje</th>':''}<th></th></tr></thead>
+  <tbody>${rows||`<tr><td colspan="5" class="empty">Cenik je prazen. Dodaj prvo jed.</td></tr>`}</tbody></table></div></section>
+  <details class="card"><summary><h3>Nastavitve cen</h3><span class="small muted">pribitek ${inVal(st.markupPct)} % · DDV ${inVal(st.vatFood)} %</span></summary>
+    <div class="grid3">${f('set-markup','markupPct','Pribitek za predlog cene (%)',st.markupPct)}${f('set-vatf','vatFood','DDV hrana (%)',st.vatFood)}${f('set-vatd','vatDrinks','DDV pijača (%)',st.vatDrinks)}
+    ${f('set-res','reservePct','Rezerva (%)',st.reservePct)}${f('set-cf','childFactor','Otrok poje (× odraslega)',st.childFactor)}${f('set-cpf','childPriceFactor','Otrok plača (× odraslega)',st.childPriceFactor)}
+    ${st.advanced?`${f('set-ap1','appetite.lahek','Apetit »lahek« (×)',st.appetite.lahek)}${f('set-ap2','appetite.obicajen','Apetit »običajen« (×)',st.appetite.obicajen)}${f('set-ap3','appetite.lacni','Apetit »lačni« (×)',st.appetite.lacni)}`:''}</div>
+    <p class="small muted" style="margin:10px 0 0">DDV stopnje preveri pri računovodji.</p></details>
+  <details class="card"><summary><h3>Varnostna kopija</h3><span class="small muted">${db?'skupni podatki':'podatki so samo na tej napravi'}</span></summary>
+    <div class="stack"><p class="small muted" style="margin:0">${db?`Prijavljen: ${esc(S.user&&S.user.email||'')}. Podatki so skupni vsem, ki imajo dostop.`:'Vsi dogodki, meniji in cenik so shranjeni samo v tem brskalniku. Občasno izvozi kopijo.'}</p>
+    <div class="row"><button type="button" class="btn sm" data-act="exportData">Izvozi podatke</button>
+    <label class="btn sm quiet" for="import-file" style="cursor:pointer">Uvozi podatke<input id="import-file" type="file" accept=".json,application/json" hidden></label>${db?'<button type="button" class="btn sm quiet" data-act="logout">Odjava</button>':''}</div></div></details>`;
+}
+
+/* ----- suppliers ----- */
+function suppliersView(){
+  const list=Object.entries(S.suppliers).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+  return `<div class="between"><div><div class="eyebrow">Mesnice, veleprodaje, pijača</div><h1>Dobavitelji</h1></div><button type="button" class="btn" data-act="newSup">+ Nov dobavitelj</button></div>
+  ${list.length?list.map(([id,s])=>{ const n=Object.values(S.catalog).filter(p=>p.supplierId===id).length; const confirm=S.ui.confirm==='sup:'+id; return `<section class="card stack">
+    <div class="between"><h3>${esc(s.name||'Nov dobavitelj')}</h3><span class="small muted">${n} artiklov v ceniku</span></div>
+    <div class="grid2">
+      <label class="f" for="s-n-${id}"><span>Ime</span><input id="s-n-${id}" class="in" data-k="sup.name" data-id="${id}" value="${esc(s.name||'')}"></label>
+      <label class="f" for="s-c-${id}"><span>Kontaktna oseba</span><input id="s-c-${id}" class="in" data-k="sup.contactName" data-id="${id}" value="${esc(s.contactName||'')}"></label>
+      <label class="f" for="s-p-${id}"><span>Telefon</span><input id="s-p-${id}" class="in" inputmode="tel" data-k="sup.phone" data-id="${id}" value="${esc(s.phone||'')}"></label>
+      <label class="f" for="s-e-${id}"><span>E-pošta</span><input id="s-e-${id}" class="in" inputmode="email" data-k="sup.email" data-id="${id}" value="${esc(s.email||'')}"></label></div>
+    <label class="f" for="s-o-${id}"><span>Opomba (dostava, rok za naročilo …)</span><input id="s-o-${id}" class="in" data-k="sup.note" data-id="${id}" value="${esc(s.note||'')}"></label>
+    <div class="row">${confirm?`<span class="small">Res izbrišem?</span><button type="button" class="btn sm danger" data-act="delSup" data-id="${id}">Izbriši</button><button type="button" class="btn sm quiet" data-act="cancelConfirm">Prekliči</button>`:`<button type="button" class="btn sm quiet" data-act="askConfirm" data-key="sup:${id}">Izbriši dobavitelja</button>`}</div>
+  </section>`;}).join(''):`<div class="card empty">Ni dobaviteljev.</div>`}`;
+}
+
+/* ----- settings ----- */
+function settingsView(){
+  const st=S.settings;
+  const f=(id,k,l,v,help)=>`<label class="f" for="${id}"><span>${l}</span><input id="${id}" class="in num-in" inputmode="decimal" data-k="set.${k}" value="${inVal(v)}">${help?`<span class="small">${help}</span>`:''}</label>`;
+  return `<div><div class="eyebrow">Privzete vrednosti za nove izračune</div><h1>Nastavitve</h1></div>
+  <section class="card stack"><h3>Podjetje</h3><div class="grid2">
+    <label class="f" for="set-company"><span>Ime podjetja / organizatorja</span><input id="set-company" class="in" data-k="set.company" value="${esc(st.company||'')}"></label>
+    <label class="f" for="set-sign"><span>Podpis v sporočilih</span><input id="set-sign" class="in" data-k="set.signature" value="${esc(st.signature||'')}" placeholder="npr. Ana Kovač, 041 …"></label></div></section>
+  <section class="card stack"><h3>Cena in davki</h3><div class="grid3">
+    ${f('set-markup','markupPct','Pribitek za predlog cene (%)',st.markupPct,'npr. 35 % nad stroški')}
+    ${f('set-vatf','vatFood','DDV hrana (%)',st.vatFood,'catering: 9,5 %')}
+    ${f('set-vatd','vatDrinks','DDV pijača (%)',st.vatDrinks,'alkohol: 22 %')}</div></section>
+  <details class="card"><summary><h3>Napredno</h3><span class="small muted">porcije, rezerva, apetit</span></summary><div class="grid3">
+    ${f('set-res','reservePct','Rezerva (%)',st.reservePct)}
+    ${f('set-cf','childFactor','Otrok poje (× odraslega)',st.childFactor)}
+    ${f('set-cpf','childPriceFactor','Otrok plača (× odraslega)',st.childPriceFactor)}
+    ${f('set-ap1','appetite.lahek','Apetit »lahek« (×)',st.appetite.lahek)}
+    ${f('set-ap2','appetite.obicajen','Apetit »običajen« (×)',st.appetite.obicajen)}
+    ${f('set-ap3','appetite.lacni','Apetit »lačni« (×)',st.appetite.lacni)}</div></details>
+  <p class="small muted">Stopnje DDV preveri pri računovodji – aplikacija jih samo uporablja za izračun.</p>`;
+}
+
+/* ---------- mutations ---------- */
+function curEv(){ return S.events[S.view.id]; }
+function touchEv(){ const ev=curEv(); if(!ev) return; ev.updatedAt=new Date().toISOString(); saveLater('events',S.view.id); }
+function setK(el){
+  const k=el.dataset.k; const v = el.type==='checkbox' ? el.checked : el.value;
+  const ev=curEv(); const i=+el.dataset.i;
+  if(k.startsWith('ev.')){
+    const f=k.slice(3);
+    if(f==='pickup'){ ev.pickup=ev.pickup||{}; ev.pickup[el.dataset.sid]=v; }
+    else if(['adults','children','vegetarians'].includes(f)){ ev[f]=Math.max(0,Math.round(num(v))); if(f==='vegetarians') ev[f]=Math.min(ev[f],num(ev.adults)); }
+    else if(f==='reservePct') ev[f]= v.trim()===''? null : num(v);
+    else ev[f]=v;
+    touchEv(); return;
+  }
+  if(k==='item.gpp'){ ev.items[i].gpp=Math.max(0,num(v)); touchEv(); return; }
+  if(k==='extra.label'){ ev.extras[i].label=v; touchEv(); return; }
+  if(k==='extra.amount'){ ev.extras[i].amount=Math.max(0,num(v)); touchEv(); return; }
+  if(k==='pr.markupPct'){ ev.pricing={...(ev.pricing||{}),mode:'markup',markupPct:num(v)}; touchEv(); return; }
+  if(k==='pr.perGuest'){ const x=Math.max(0,num(v)); ev.pricing = (String(v).trim()===''||x<=0) ? {mode:'auto'} : {mode:'perGuest',perGuest:x}; touchEv(); return; }
+  if(k.startsWith('after.')){
+    ev.after=ev.after||{items:{}}; ev.after.items=ev.after.items||{};
+    if(k==='after.notes') ev.after.notes=v;
+    else { const x=ev.after.items[i]=ev.after.items[i]||{}; if(k==='after.left') x.left= v===''?null:num(v); else x.out=!!v; }
+    touchEv(); return;
+  }
+  if(k.startsWith('cat.')){
+    const id=el.dataset.id, p=S.catalog[id]; if(!p) return; const f=k.slice(4);
+    p[f] = ['gpp','bonePct','price','pack'].includes(f) ? Math.max(0,num(v)) : v;
+    saveLater('catalog',id); return;
+  }
+  if(k.startsWith('menu.')){ const id=el.dataset.id, m=S.menus[id]; if(!m) return; const f=k.slice(5); m[f]= f==='price' ? (String(v).trim()===''||num(v)<=0?null:num(v)) : v; saveLater('menus',id); return; }
+  if(k.startsWith('sup.')){ const id=el.dataset.id; if(!S.suppliers[id]) return; S.suppliers[id][k.slice(4)]=v; saveLater('suppliers',id); return; }
+  if(k.startsWith('set.')){
+    const f=k.slice(4);
+    if(f.startsWith('appetite.')) S.settings.appetite[f.slice(9)]=Math.max(0,num(v));
+    else S.settings[f] = ['company','signature'].includes(f) ? v : Math.max(0,num(v));
+    saveLater('settings','main'); return;
+  }
+}
+function newEvent(data={}){
+  const id=uid();
+  S.events[id]={ name:'Nov dogodek', date:'', client:'', location:'', status:'povprasevanje', adults:50, children:0, vegetarians:0, appetite:'obicajen', reservePct:null, items:[], extras:[], pricing:{mode:'markup'}, createdAt:new Date().toISOString(), ...data };
+  saveLater('events',id,10);
+  S.view={name:'event',id,tab:'ponudba'}; saveView(); render(); window.scrollTo(0,0);
+}
+function itemFromPid(pid){ const p=S.catalog[pid]; return { pid, snap:{name:p.name,cat:p.cat,unit:p.unit,gpp:p.gpp,bonePct:p.bonePct,price:p.price,pack:p.pack,supplierId:p.supplierId} }; }
+function learn(){
+  const ev=curEv(), c=calc(ev), a=ev.after||{items:{}}; let n=0;
+  c.lines.forEach(l=>{
+    if(!l||l.perMeat||!l.p.exists) return;
+    const x=(a.items||{})[l.i]; if(!x || (x.left==null && !x.out)) return;
+    const persons=l.persons*l.factor; if(!persons) return;
+    const consumed=Math.max(0, l.order-num(x.left));
+    let v = l.unit==='kg' ? consumed*1000/(1+l.bone/100)/persons : consumed/persons;
+    if(x.out) v*=1.15;
+    const p=S.catalog[l.it.pid]; const h=(p.history||[]).filter(e=>e.ev!==S.view.id);
+    h.push({ev:S.view.id, date:ev.date||today(), v:Math.round(v*100)/100, out:!!x.out});
+    p.history=h.slice(-8); saveLater('catalog',l.it.pid); n++;
+  });
+  ev.after={...a, learnedAt:new Date().toISOString()};
+  if(!['obracunano'].includes(ev.status)) ev.status='izvedeno';
+  touchEv(); render(); toast(n?`Učenje shranjeno za ${n} artiklov.`:'Ni vpisanih ostankov.');
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); toast('Kopirano'); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly',''); ta.style.cssText='position:fixed;left:-9999px'; document.body.appendChild(ta); ta.select(); let ok=false; try{ ok=document.execCommand('copy'); }catch(_){} ta.remove(); toast(ok?'Kopirano':'Kopiranje ni uspelo'); }
+}
+async function copyFrom(id){
+  const el=document.getElementById(id); if(!el) return;
+  try{ await navigator.clipboard.writeText(el.value); toast('Kopirano'); }
+  catch(e){ el.focus(); el.select(); toast('Označeno – kopiraj s Ctrl/Cmd + C'); }
+}
+async function save(filename,data){
+  if(!downloads) return;
+  try{ await downloads.save({filename,data}); }
+  catch(e){ if(e&&e.code!=='declined') toast('Prenos ni uspel.'); }
+}
+function safeName(s){ return (s||'dogodek').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'dogodek'; }
+
+function quickCreate(){
+  const q=quickState();
+  if(num(q.adults)+num(q.children)<=0){ toast('Vpiši število gostov.'); document.getElementById('q-adults')?.focus(); return; }
+  const cats=Object.keys(CATS).filter(c=>q.cats.includes(c));
+  S.settings.quickCats=cats; saveLater('settings','main');
+  const data={ name:q.name.trim()||'Nov dogodek', date:q.date||'', client:q.client.trim(), location:'',
+    adults:Math.max(0,Math.round(num(q.adults))), children:Math.max(0,Math.round(num(q.children))), cats, items:[] };
+  const mid=q.menuId&&S.menus[q.menuId]?q.menuId:null;
+  S.ui.quick=null;
+  if(mid){ applyMenu(data,mid); }
+  newEvent(data); toast(mid?'Osnutek ustvarjen z menijem.':'Osnutek ustvarjen – odkljukaj artikle.');
+}
+
+/* ---------- date picker ---------- */
+const X_ICON='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+const CAL_ICON='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
+const $dp=document.getElementById('dp'), $dpb=document.getElementById('dp-back');
+const DP={t:null, sel:'', y:0, m:0, anchor:null};
+const ymd=(y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+function dpOpen(t,btn){
+  const cur = t==='q' ? quickState().date : (curEv()?.date||'');
+  const base = cur ? new Date(cur+'T12:00:00') : new Date();
+  Object.assign(DP,{t, sel:cur, y:base.getFullYear(), m:base.getMonth(), anchor:btn.id});
+  dpRender(); $dp.hidden=false; $dpb.hidden=false;
+  const r=btn.getBoundingClientRect(); const h=$dp.offsetHeight;
+  let top=r.bottom+6; if(top+h>innerHeight-8) top=Math.max(8,r.top-h-6);
+  $dp.style.top=top+'px'; $dp.style.left=Math.max(16,Math.min(r.left, innerWidth-$dp.offsetWidth-16))+'px';
+  ($dp.querySelector('[aria-pressed="true"]')||$dp.querySelector('.dp-day.today')||$dp.querySelector('.dp-day'))?.focus();
+}
+function dpClose(){ $dp.hidden=true; $dpb.hidden=true; const a=document.getElementById(DP.anchor); a&&a.focus(); }
+function dpApply(){
+  if(DP.t==='q') quickState().date=DP.sel;
+  else { const ev=curEv(); if(ev){ ev.date=DP.sel; touchEv(); } }
+  $dp.hidden=true; $dpb.hidden=true; render(); document.getElementById(DP.anchor)?.focus();
+}
+function dpRender(){
+  const first=new Date(DP.y,DP.m,1), start=(first.getDay()+6)%7, days=new Date(DP.y,DP.m+1,0).getDate(), prevDays=new Date(DP.y,DP.m,0).getDate();
+  const td=today(); let cells='';
+  for(let i=0;i<42;i++){
+    let y=DP.y,m=DP.m,d=i-start+1,out=false;
+    if(d<1){ m--; d=prevDays+d; out=true; } else if(d>days){ m++; d=d-days; out=true; }
+    if(m<0){m=11;y--;} if(m>11){m=0;y++;}
+    const v=ymd(y,m,d);
+    cells+=`<button type="button" class="dp-day${out?' out':''}${v===td?' today':''}" data-dp="pick" data-v="${v}" aria-pressed="${v===DP.sel}" aria-label="${new Date(v+'T12:00:00').toLocaleDateString('sl-SI',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}">${d}</button>`;
+  }
+  const title=first.toLocaleDateString('sl-SI',{month:'long',year:'numeric'});
+  $dp.innerHTML=`<div class="dp-head"><button type="button" class="icon-btn" data-dp="prev" aria-label="Prejšnji mesec"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button><b>${title}</b><button type="button" class="icon-btn" data-dp="next" aria-label="Naslednji mesec"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg></button></div>
+  <div class="dp-grid">${['pon','tor','sre','čet','pet','sob','ned'].map(w=>`<span class="wd">${w}</span>`).join('')}${cells}</div>
+  <div class="small muted" style="min-height:18px">${DP.sel?esc(fmtDate(DP.sel)):'Ni izbranega datuma'}</div>
+  <div class="dp-foot"><div class="row" style="gap:6px"><button type="button" class="btn sm quiet" data-dp="today">Danes</button>${DP.sel?'<button type="button" class="btn sm quiet" data-dp="clear">Počisti</button>':''}</div>
+  <div class="row" style="gap:6px"><button type="button" class="btn sm quiet" data-dp="cancel">Prekliči</button><button type="button" class="btn sm" data-dp="ok">Izberi</button></div></div>`;
+}
+$dp.addEventListener('click',e=>{
+  const b=e.target.closest('[data-dp]'); if(!b) return; const a=b.dataset.dp;
+  const move=n=>{ DP.m+=n; if(DP.m<0){DP.m=11;DP.y--;} if(DP.m>11){DP.m=0;DP.y++;} dpRender(); };
+  if(a==='prev') move(-1); else if(a==='next') move(1);
+  else if(a==='pick'){ DP.sel=b.dataset.v; const d=new Date(DP.sel+'T12:00:00'); DP.y=d.getFullYear(); DP.m=d.getMonth(); dpRender(); $dp.querySelector('[aria-pressed="true"]')?.focus(); }
+  else if(a==='today'){ DP.sel=today(); const d=new Date(); DP.y=d.getFullYear(); DP.m=d.getMonth(); dpRender(); }
+  else if(a==='clear'){ DP.sel=''; dpRender(); }
+  else if(a==='cancel') dpClose();
+  else if(a==='ok') dpApply();
+});
+$dp.addEventListener('dblclick',e=>{ const b=e.target.closest('[data-dp="pick"]'); if(b){ DP.sel=b.dataset.v; dpApply(); } });
+$dp.addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.preventDefault(); dpClose(); } else if(e.key==='Enter' && e.target.dataset.dp==='pick'){ e.preventDefault(); DP.sel=e.target.dataset.v; dpApply(); } });
+$dpb.addEventListener('click',dpClose);
+
+/* ---------- AI ---------- */
+function aiMsg(code){
+  return ({not_granted:'Uporaba AI ni dovoljena v tem pogledu.',rate_limited:'Preveč zahtev – poskusi čez minuto.',invalid_json:'Odgovora nisem razumela – poskusi s krajšim opisom.',refused:'Tega opisa ne morem obdelati.',session_expired:'Prijava je potekla – osveži stran.'})[code]||'AI trenutno ni na voljo – poskusi znova.';
+}
+async function aiEvent(){
+  const desc=(document.getElementById('ai-desc')?.value||'').trim(); S.ui.aiDraft=desc;
+  if(!desc){ S.ui.aiErr='Najprej opiši dogodek.'; render(); return; }
+  S.ui.aiBusy=true; S.ui.aiErr=''; render();
+  const cat=Object.entries(S.catalog).map(([id,p])=>`${id}: ${p.name} (${CATS[p.cat]||p.cat}, ${p.unit})`).join('\n');
+  const prompt=`Si tajnica organizatorja pogostitev in piknikov v Sloveniji. Iz opisa pripravi osnutek dogodka.
+Današnji datum: ${today()}.
+Cenik (id: ime):
+${cat||'(prazen)'}
+
+Opis dogodka:
+"""${desc.slice(0,4000)}"""
+
+Vrni SAMO JSON objekt te oblike:
+{"name":"kratko ime dogodka","date":"YYYY-MM-DD ali prazno","client":"","location":"","adults":0,"children":0,"vegetarians":0,"appetite":"lahek|obicajen|lacni","productIds":["id iz cenika"],"notes":"kar ne sodi drugam"}
+Pravila: productIds naj vsebuje samo id-je iz cenika, ki ustrezajo opisu; če meni ni naveden, izberi razumno osnovo za žar (meso + priloge + drugo). Ne izmišljuj si podatkov, ki jih ni v opisu – pusti prazno ali 0.`;
+  try{
+    const r=await sample.json(prompt,{modelTier:'quick'});
+    const ids=(Array.isArray(r?.productIds)?r.productIds:[]).map(String).filter(id=>S.catalog[id]);
+    const data={ name:String(r?.name||'Nov dogodek').slice(0,120), date:/^\d{4}-\d{2}-\d{2}$/.test(r?.date||'')?r.date:'', client:String(r?.client||''), location:String(r?.location||''),
+      adults:Math.max(0,Math.round(num(r?.adults))), children:Math.max(0,Math.round(num(r?.children))), vegetarians:Math.max(0,Math.round(num(r?.vegetarians))),
+      appetite:APPETITE[r?.appetite]?r.appetite:'obicajen', notes:[String(r?.notes||''),'Opis: '+desc].filter(Boolean).join('\n\n'), items:ids.map(itemFromPid) };
+    S.ui.aiBusy=false; S.ui.aiDraft=''; newEvent(data); toast('Osnutek pripravljen – preveri gramature.');
+  }catch(e){ S.ui.aiBusy=false; S.ui.aiErr=aiMsg(e&&e.code); render(); }
+}
+async function aiOffer(){
+  const ev=curEv(), c=calc(ev), st=S.settings;
+  S.ui.offerBusy=true; S.ui.offerErr=''; render();
+  const prompt=`Napiši kratko, prijazno ponudbo (e-pošto) v slovenščini za pogostitev. Uporabi SAMO spodnje podatke, ne dodajaj cen ali storitev, ki jih ni. Brez markdowna, navaden tekst, z nagovorom in podpisom.
+Dogodek: ${ev.name||''}
+Naročnik: ${ev.client||'(neznan)'}
+Datum: ${fmtDate(ev.date)}
+Lokacija: ${ev.location||'(ni navedena)'}
+Gostje: ${c.adults} odraslih, ${c.kids} otrok, od tega ${c.veg} brez mesa
+Meni:
+${menuText(c)}
+Cena na odraslega brez DDV: ${eur(c.perGuest)}; na otroka: ${eur(c.perGuest*num(st.childPriceFactor))}
+Skupaj brez DDV: ${eur(c.neto)}; DDV: ${eur(c.vat)}; skupaj z DDV: ${eur(c.bruto)}
+Opombe organizatorja: ${(ev.notes||'').slice(0,1500)}
+Podpis: ${st.signature||st.company||''}`;
+  try{
+    const r=await sample(prompt,{modelTier:'default',cache:false});
+    ev.offerText=r.text.trim(); S.ui.offerBusy=false; touchEv(); render(); toast('Ponudba napisana.');
+  }catch(e){ S.ui.offerBusy=false; S.ui.offerErr=aiMsg(e&&e.code); render(); }
+}
+
+/* ---------- events ---------- */
+$app.addEventListener('input', e=>{ const el=e.target; if(el.dataset.q){ quickState()[el.dataset.q]=el.value; lastInput=Date.now(); if(el.dataset.q==='adults'||el.dataset.q==='children') scheduleRender(); return; } if(!el.dataset.k) return; lastInput=Date.now(); setK(el); if(el.tagName!=='SELECT' && el.type!=='checkbox' && el.type!=='date') scheduleRender(); });
+$app.addEventListener('change', e=>{ const el=e.target;
+  if(el.id==='import-file' && el.files && el.files[0]){ const r=new FileReader(); r.onload=()=>{ try{ const d=JSON.parse(r.result); if(!d||!d.catalog) throw 0; S.settings={...clone(DEFAULT_SETTINGS),...(d.settings||{})}; S.catalog=d.catalog||{}; S.menus=d.menus||{}; S.events=d.events||{}; if(db){ Object.keys(S.catalog).forEach(id=>flush('catalog',id)); Object.keys(S.menus).forEach(id=>flush('menus',id)); Object.keys(S.events).forEach(id=>flush('events',id)); flush('settings','main'); } else localPersist(); render(); toast('Podatki uvoženi.'); }catch(_){ toast('Ta datoteka ni FRASEK kopija.'); } }; r.readAsText(el.files[0]); el.value=''; return; } if(!el.dataset.k) return; setK(el); if(el.tagName==='SELECT' || el.type==='checkbox' || el.type==='date'){ lastInput=0; render(); } });
+$app.addEventListener('click', e=>{
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const act=b.dataset.act, ev=curEv();
+  const go=v=>{ S.view=v; S.ui.confirm=null; saveView(); render(); window.scrollTo(0,0); };
+  switch(act){
+    case 'nav': go({name:b.dataset.to}); break;
+    case 'dp': dpOpen(b.dataset.t,b); break;
+    case 'login': { const pv=new firebase.auth.GoogleAuthProvider(); fbAuth.signInWithPopup(pv).catch(e=>{ if(/popup|operation-not-supported|web-storage/.test(e.code||'')) fbAuth.signInWithRedirect(pv); else showLogin('Prijava ni uspela: '+(e.message||e.code)); }); break; }
+    case 'logout': fbAuth&&fbAuth.signOut().then(()=>location.reload()); break;
+    case 'exportData': { const blob=new Blob([JSON.stringify({app:'frasek',v:1,at:new Date().toISOString(),settings:S.settings,catalog:S.catalog,menus:S.menus,events:S.events},null,1)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='frasek-podatki-'+today()+'.json'; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500); toast('Kopija izvožena.'); break; }
+    case 'adv': S.settings.advanced=!S.settings.advanced; saveLater('settings','main',10); render(); toast(S.settings.advanced?'Več možnosti vklopljeno':'Preprost način'); break;
+    case 'theme': { const t=isDark()?'light':'dark'; applyTheme(t); try{ localStorage.setItem('pt-theme',t); }catch(e){} render(); break; }
+    case 'open': go({name:'event',id:b.dataset.id}); break;
+    case 'tab': S.view.tab=b.dataset.tab; saveView(); render(); break;
+    case 'newEvent': newEvent({name:'',adults:0}); setTimeout(()=>document.getElementById('ev-name')?.focus(),50); break;
+    case 'dupEvent': { const src=clone(S.events[b.dataset.id]); delete src.after; delete src.offerText; newEvent({...src, name:(src.name||'')+' (kopija)', status:'povprasevanje', date:'', createdAt:new Date().toISOString()}); break; }
+    case 'askConfirm': S.ui.confirm=b.dataset.key; render(); break;
+    case 'cancelConfirm': S.ui.confirm=null; render(); break;
+    case 'delEvent': removeDoc('events',b.dataset.id); go({name:'events'}); toast('Dogodek izbrisan.'); break;
+    case 'appetite': ev.appetite=b.dataset.v; touchEv(); render(); break;
+    case 'addItem': { const s=document.getElementById('add-item'); if(s&&s.value){ ev.items=ev.items||[]; ev.items.push(itemFromPid(s.value)); touchEv(); render(); } break; }
+    case 'rmItem': { const i=+b.dataset.i; ev.items.splice(i,1); if(ev.after&&ev.after.items){ const n={}; Object.entries(ev.after.items).forEach(([k,v])=>{k=+k; if(k<i) n[k]=v; else if(k>i) n[k-1]=v;}); ev.after.items=n; } touchEv(); render(); break; }
+    case 'applyItemSug': ev.items[+b.dataset.i].gpp=num(b.dataset.v); touchEv(); render(); break;
+    case 'addExtra': ev.extras=ev.extras||[]; ev.extras.push({label:b.dataset.l,amount:0}); touchEv(); render(); setTimeout(()=>document.getElementById('ex-a-'+(ev.extras.length-1))?.focus(),0); break;
+    case 'rmExtra': ev.extras.splice(+b.dataset.i,1); touchEv(); render(); break;
+    case 'priceMode': { const c=calc(ev); ev.pricing={...(ev.pricing||{}),mode:b.dataset.v}; if(b.dataset.v==='perGuest' && !ev.pricing.perGuest) ev.pricing.perGuest=Math.round(c.perGuest*100)/100; touchEv(); render(); break; }
+    case 'setStatus': ev.status=b.dataset.v; touchEv(); render(); toast('Status posodobljen.'); break;
+    case 'resetOffer': delete ev.offerText; touchEv(); render(); break;
+    case 'copy': copyFrom(b.dataset.src); break;
+    case 'copyOffer': { copyText((S.settings.advanced&&ev.offerText)||offerText(ev,calc(ev))); break; }
+    case 'step': { const f=b.dataset.f; ev[f]=Math.max(0,num(ev[f])+num(b.dataset.d)); if(f==='vegetarians') ev[f]=Math.min(ev[f],num(ev.adults)); touchEv(); render(); break; }
+    case 'useSuggested': ev.pricing={mode:'auto'}; touchEv(); render(); toast('Uporabljena predlagana cena.'); break;
+    case 'copyList': { copyText(listText(orderRows(calc(ev)))); break; }
+    case 'dlOffer': { const t=document.getElementById('offer-txt')?.value||''; save(`ponudba-${safeName(ev.name)}.txt`, t); break; }
+    case 'dlOrders': { const c=calc(ev); const rows=[['Dobavitelj','Artikel','Enota','Potrebno','Naročilo','Cena na enoto','Znesek']]; Object.entries(c.bySup).forEach(([sid,ls])=>ls.forEach(l=>rows.push([S.suppliers[sid]?.name||'Brez dobavitelja',l.name,l.unit,nf(l.need,2),nf(l.order,2),nf(l.price,2),nf(l.cost,2)]))); save(`narocila-${safeName(ev.name)}.csv`, '\ufeff'+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(';')).join('\n')); break; }
+    case 'learn': learn(); break;
+    case 'qCat': { const q=quickState(), v=b.dataset.v; q.cats=q.cats.includes(v)?q.cats.filter(x=>x!==v):[...q.cats,v]; render(); break; }
+    case 'evPick': { const pid=b.dataset.id; ev.items=ev.items||[]; const i=ev.items.findIndex(it=>it.pid===pid); if(i>=0){ ev.items.splice(i,1); if(ev.after&&ev.after.items){ const n={}; Object.entries(ev.after.items).forEach(([k,v])=>{k=+k; if(k<i) n[k]=v; else if(k>i) n[k-1]=v;}); ev.after.items=n; } } else ev.items.push(itemFromPid(pid)); touchEv(); render(); break; }
+    case 'newMenu': { const id=uid(); S.menus[id]={name:'Nov meni',items:[],price:null}; saveLater('menus',id,10); render(); setTimeout(()=>{const el=document.getElementById('m-n-'+id); el?.focus(); el?.select();},0); break; }
+    case 'delMenu': removeDoc('menus',b.dataset.id); S.ui.confirm=null; render(); break;
+    case 'menuPick': { const m=S.menus[b.dataset.id]; if(!m) break; m.items=m.items||[]; const pid=b.dataset.pid; const i=m.items.findIndex(x=>x.pid===pid); if(i>=0) m.items.splice(i,1); else m.items.push({pid}); saveLater('menus',b.dataset.id); render(); break; }
+    case 'evMenu': { const v=b.dataset.v; if(v==='custom'){ ev.menuId=null; touchEv(); render(); break; } applyMenu(ev,v); touchEv(); render();  break; }
+    case 'qMenu': { const q=quickState(); q.menuId = b.dataset.v==='custom'?null:b.dataset.v; render(); break; }
+    case 'evCat': { const v=b.dataset.v; ev.cats=[...(ev.cats||[]),v]; touchEv(); render(); break; }
+    case 'qCreate': quickCreate(); break;
+    case 'aiOffer': aiOffer(); break;
+    case 'newCat': { const id=uid(); S.catalog[id]={name:'Nov artikel',cat:'meso',unit:'kg',gpp:100,bonePct:0,price:0,pack:0,supplierId:''}; saveLater('catalog',id,10); render(); setTimeout(()=>{const el=document.getElementById('c-n-'+id); el?.focus(); el?.select();},0); break; }
+    case 'delCat': removeDoc('catalog',b.dataset.id); S.ui.confirm=null; render(); break;
+    case 'applyCatSug': S.catalog[b.dataset.id].gpp=num(b.dataset.v); saveLater('catalog',b.dataset.id); render(); break;
+    case 'newSup': { const id=uid(); S.suppliers[id]={name:'Nov dobavitelj',contactName:'',phone:'',email:'',note:''}; saveLater('suppliers',id,10); render(); setTimeout(()=>{const el=document.getElementById('s-n-'+id); el?.focus(); el?.select();},0); break; }
+    case 'delSup': removeDoc('suppliers',b.dataset.id); S.ui.confirm=null; render(); break;
+  }
+});
+window.addEventListener('pagehide', ()=>{ for(const [key,t] of pending){ clearTimeout(t); const [c,id]=key.split('/'); flush(c,id); } });
+
+boot();
+try{ navigator.storage&&navigator.storage.persist&&navigator.storage.persist(); }catch(e){}
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+})();
+</script>
+
+</body>
+</html>

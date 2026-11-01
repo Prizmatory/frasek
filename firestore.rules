@@ -1,0 +1,17 @@
+rules_version = '2';
+// Samo ti in Nikolaj lahko bereta in pišeta. Dodaj/odstrani e-naslove v seznamu.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function dovoljen() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+          'kniplicjaka@gmail.com',
+          'frasbbq@gmail.com'
+        ];
+    }
+    match /{document=**} {
+      allow read, write: if dovoljen();
+    }
+  }
+}
