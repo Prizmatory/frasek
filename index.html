@@ -112,9 +112,9 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mu
 .in{width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;background:var(--card);padding:0 10px;color:var(--ink);font-size:15px}
 textarea.in{padding:10px;min-height:96px;resize:vertical;line-height:1.45}
 .in.num-in{text-align:right;font-variant-numeric:tabular-nums}
-.in.cell{min-height:36px;border-color:transparent;background:transparent;padding:0 6px}
+.in.cell{min-height:36px;border-color:transparent;background-color:transparent;padding:0 6px}
 .in.cell:hover{border-color:var(--dash)}
-.in.cell:focus{border-color:var(--accent);background:var(--card)}
+.in.cell:focus{border-color:var(--accent);background-color:var(--card)}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 @media (max-width:560px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tiles>:last-child:nth-child(odd){grid-column:1/-1}}
@@ -311,6 +311,17 @@ details.card[open] summary{margin-bottom:12px}
 .cl-price .small{font-weight:500}
 .adv-title{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .draft-card{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-color:var(--fill)}
+/* selects: own arrow so iOS doesn't draw it over neighbours */
+select.in{-webkit-appearance:none;appearance:none;padding-right:26px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23b9ab9c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:12px}
+select.in.cell{background-color:transparent}
+@media (max-width:640px){
+  .cat-table td{min-width:0;overflow:hidden}
+  .cat-table td .row{min-width:0}
+  .cat-table td .in.cell{max-width:100%}
+  .cat-table select.in.cell{width:auto;max-width:130px}
+  .cat-table td:nth-child(3) input.in.cell{width:56px!important;padding:0 4px}
+  .cat-table td:nth-child(3) select.in.cell{max-width:84px;padding-left:4px}
+}
 /* ===== phone ===== */
 @media (max-width:700px){
   body{padding-block:0 calc(96px + env(safe-area-inset-bottom,0px))}
