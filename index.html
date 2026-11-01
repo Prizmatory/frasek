@@ -18,7 +18,7 @@
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>FRASEK</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rye&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rye&family=Montserrat:wght@400;500;600;700;800&display=swap">
 <style>
 :root{
   --ground:#f5efe7; --card:#fffdf9; --soft:#ece3d7; --seg:#e7dccd;
@@ -27,8 +27,9 @@
   --accent:#a8481f; --fill:#b8502a; --fill-ink:#ffffff; --btn:#1c1916; --btn-ink:#fffdf9;
   --good:#2f6b3f; --good-soft:#dde8d8; --warn:#6b4a2e; --warn-soft:#f1e3d2; --bad:#a3281c; --bad-soft:#f3d9d3;
   --focus:#b8502a;
-  --serif:'Rye',Georgia,'Times New Roman',serif;
-  --sans:'Instrument Sans','Segoe UI',Helvetica,sans-serif;
+  --serif:'Montserrat','Segoe UI',Helvetica,Arial,sans-serif;
+  --sans:'Montserrat','Segoe UI',Helvetica,Arial,sans-serif;
+  --brand:'Rye',Georgia,serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -62,8 +63,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--eyebrow);font-weight:600}
 .muted{color:var(--muted)}
 .small{font-size:13px}
-h1,h2,h3{font-family:var(--serif);margin:0;text-wrap:balance;font-weight:400;letter-spacing:.02em}
-.serif,.big,.v,b.serif{font-weight:400}
+h1,h2,h3{font-family:var(--serif);margin:0;text-wrap:balance;font-weight:800;letter-spacing:-.01em}
+.serif,.big,.v,b.serif{font-weight:700}
 h1{font-size:clamp(26px,5vw,36px);line-height:1.1;color:var(--h1);font-weight:400}
 h2{font-size:22px}
 h3{font-size:17px}
@@ -73,7 +74,7 @@ h3{font-size:17px}
 .top-in{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px}
 .brand{display:flex;align-items:baseline;gap:8px;margin-right:auto;padding-bottom:10px}
 .brand{align-items:center!important}.brand img{width:44px;height:44px;border-radius:50%;flex:none}
-.brand b{font-family:var(--serif);font-size:24px;font-weight:400;color:var(--ink);letter-spacing:.04em;line-height:1}
+.brand b{font-family:var(--brand);font-size:24px;font-weight:400;color:var(--ink);letter-spacing:.04em;line-height:1}
 .brand small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--eyebrow);font-weight:700;margin-top:3px}
 .brand span{font-size:12px;color:var(--muted)}
 .theme-btn{width:40px;height:40px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px;order:3}
@@ -190,7 +191,8 @@ details.card.flat summary h2{font-size:18px}
   .cat-table td .row{justify-content:flex-start!important}
   .cat-table td:nth-child(2){grid-column:1;grid-row:2}
   .cat-table td:nth-child(4){grid-column:2/-1;grid-row:2}
-  .cat-table td:nth-child(3){grid-column:1/-1;grid-row:3}
+  .cat-table td:nth-child(3){grid-column:1;grid-row:3}
+  .cat-table td:nth-child(5){grid-column:2/-1;grid-row:3}
   .cat-table td:nth-child(2) .in{width:auto}
 }
 /* checklist */
@@ -305,6 +307,10 @@ details.card[open] summary{margin-bottom:12px}
 .login{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px}
 .login img{width:120px;height:120px;border-radius:50%}
 .login .btn{min-width:240px}
+.pricebar .pb-btn{margin-left:8px;min-height:44px;padding:0 14px;border-radius:10px;border:0;background:var(--fill-ink);color:var(--fill);font-weight:800;cursor:pointer}
+.cl-price .small{font-weight:500}
+.adv-title{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.draft-card{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-color:var(--fill)}
 /* ===== phone ===== */
 @media (max-width:700px){
   body{padding-block:0 calc(96px + env(safe-area-inset-bottom,0px))}
@@ -352,9 +358,10 @@ details.card[open] summary{margin-bottom:12px}
 (() => {
 'use strict';
 /* ---------- constants ---------- */
-const CATS = { meso:'Meso', priloge:'Priloge', pijaca:'Pijača', drugo:'Drugo' };
-const UNITS = { kg:'kg', kos:'kos', l:'l', kgm:'kg' };
+const CATS = { meso:'Meso', priloge:'Priloge', pijaca:'Pijača', drugo:'Drugo', storitve:'Storitve' };
+const UNITS = { kg:'kg', kos:'kos', l:'l', kgm:'kg', dog:'dogodek', os:'os' };
 const UNIT_LABELS = { kg:'g', kos:'kos', l:'l', kgm:'kg/kg mesa' };
+const SVC_UNITS = { dog:'na dogodek', os:'na osebo' };
 const UNIT_OPTS = { kg:'kg / os', kos:'kos / os', l:'l / os', kgm:'kg / kg mesa' };
 const normP = p => { if(p.cat==='oglje'){ p.cat='drugo'; p.unit='kgm'; } p.perMeat = p.unit==='kgm'; return p; };
 const STATUS = { povprasevanje:'Povpraševanje', ponudba:'Ponudba poslana', potrjeno:'Potrjeno', izvedeno:'Izvedeno', obracunano:'Obračunano' };
@@ -370,12 +377,15 @@ const S = {
   settings: structuredClone(DEFAULT_SETTINGS),
   catalog:{}, suppliers:{}, events:{}, menus:{},
   view: loadView(), mode:'loading', loaded:{events:false,catalog:false,suppliers:false,settings:false,menus:false},
+  draft: loadDraft(),
   ui:{ confirm:null, aiBusy:false, aiErr:'', offerBusy:false }
 };
 let db=null, sample=null, downloads=null;
 const pending = new Map();       // "col/id" -> timer
 let lastInput = 0, renderTimer = null;
 
+function loadDraft(){ try{ const d=JSON.parse(localStorage.getItem('pt-draft')||'null'); return d&&d.id&&d.ev?d:null; }catch(e){ return null; } }
+function saveDraft(){ try{ if(S.draft) localStorage.setItem('pt-draft',JSON.stringify(S.draft)); else localStorage.removeItem('pt-draft'); }catch(e){} }
 function loadView(){ try{ const v=JSON.parse(localStorage.getItem('pt-view')||'null'); if(v&&v.name) return v; }catch(e){} return {name:'events'}; }
 function saveView(){ try{ localStorage.setItem('pt-view', JSON.stringify(S.view)); }catch(e){} }
 
@@ -431,7 +441,9 @@ function handleDbError(e){
 }
 
 let fbAuth=null;
-function fbConfigured(){ const c=window.FRASEK_FIREBASE; return !!(c&&c.apiKey&&!/VPI/.test(c.apiKey)&&window.firebase); }
+const FB_DEFAULT={apiKey:"AIzaSyCHhJm-UpT8igMnQc-adAjHHIlAXxy5T0I",authDomain:"frasek-14d72.firebaseapp.com",projectId:"frasek-14d72",storageBucket:"frasek-14d72.firebasestorage.app",messagingSenderId:"76830761934",appId:"1:76830761934:web:9565d8fee51a4fdd79419f"};
+function fbCfg(){ const c=window.FRASEK_FIREBASE; return (c&&c.apiKey&&!/VPI/.test(c.apiKey))?c:FB_DEFAULT; }
+function fbConfigured(){ return !!window.firebase; }
 function showLogin(msg,signedIn){
   $app.innerHTML=`<div class="login"><img src="icon-192.png" alt="FRAS BBQ"><h1>FRASEK</h1><p class="muted">Kalkulacije menijev za FRAS BBQ</p>
   ${signedIn?`<button type="button" class="btn big" data-act="logout">Odjava</button>`:`<button type="button" class="btn big" data-act="login">Prijava z Google</button>`}
@@ -439,7 +451,7 @@ function showLogin(msg,signedIn){
 }
 function getFirebaseDb(){
   if(!fbConfigured()) return Promise.resolve(null);
-  firebase.initializeApp(window.FRASEK_FIREBASE);
+  firebase.initializeApp(fbCfg());
   fbAuth=firebase.auth();
   return new Promise(res=>{
     fbAuth.getRedirectResult().catch(e=>showLogin('Prijava ni uspela: '+(e.message||e.code)));
@@ -502,6 +514,18 @@ function suggestion(p){
   const avg = h.reduce((a,x)=>a+x.v,0)/h.length;
   return { v: p.unit==='kg' ? Math.round(avg/5)*5 : Math.round(avg*100)/100, n:h.length };
 }
+function sellOf(p){
+  if(num(p.sell)>0) return num(p.sell);
+  if(p.cat==='storitve') return num(p.price)*(1+num(S.settings.markupPct)/100);
+  return perPerson([{pid:p.pid||'',snap:p}]).cost*(1+num(S.settings.markupPct)/100);
+}
+function menuBase(m,guests){
+  const tiers=(m.tiers||[]).filter(t=>num(t.min)>0&&num(t.price)>0).sort((a,b)=>num(a.min)-num(b.min));
+  let price=num(m.price);
+  tiers.forEach(t=>{ if(guests>=num(t.min)) price=num(t.price); });
+  if(price>0) return price;
+  return (m.items||[]).filter(x=>S.catalog[x.pid]).reduce((a,x)=>a+sellOf({...S.catalog[x.pid],pid:x.pid}),0);
+}
 function calc(ev){
   const st=S.settings;
   const apF = num((st.appetite||{})[ev.appetite||'obicajen'] ?? 1) || 1;
@@ -518,6 +542,7 @@ function calc(ev){
     const gpp = (it.gpp===undefined||it.gpp===null||it.gpp==='') ? num(p.gpp) : num(it.gpp);
     const bone = num(p.bonePct);
     let persons=0, factor=1, need=0;
+    if(p.cat==='storitve'){ const q=p.unit==='os'?adults+kids:1; return { i, it, p, name:p.name||'(izbrisano)', cat:p.cat, unit:p.unit, svc:true, gpp:0, bone:0, persons:0, factor:1, need:q, order:q, pack:0, price:num(p.price), cost:q*num(p.price), supplierId:'' }; }
     if(p.perMeat){ need = meatKg * gpp; }
     else {
       persons = p.cat==='meso' ? meatP : allP;
@@ -545,18 +570,21 @@ function calc(ev){
   const billing = adults + kids*num(st.childPriceFactor);
   const pr = ev.pricing||{};
   const mode = (pr.mode==='perGuest' && num(pr.perGuest)>0) ? 'perGuest' : 'auto';
-  const markup = num(st.markupPct), mk=1+markup/100;
-  let suggested = perPerson(items,apF).cost*mk;
+  const markup = num(st.markupPct);
+  const vF=num(st.vatFood)/100, vD=num(st.vatDrinks)/100;
+  const guests=adults+kids;
   const menu = ev.menuId && S.menus[ev.menuId];
-  if(menu && num(menu.price)>0){
-    const mItems=(menu.items||[]).filter(x=>S.catalog[x.pid]);
-    suggested = num(menu.price) + (perPerson(items,apF).cost - perPerson(mItems).cost)*mk;
-  }
-  suggested=Math.max(0,suggested);
-  const neto = (mode==='perGuest' ? num(pr.perGuest) : suggested)*billing;
-  const drinkShare = totalCost>0 ? drinksCost/totalCost : 0;
-  const vatRate = (drinkShare*num(st.vatDrinks) + (1-drinkShare)*num(st.vatFood))/100;
-  const vat = neto*vatRate;
+  const menuSet=new Set(menu?(menu.items||[]).map(x=>x.pid):[]);
+  let basePP=0, addPP=0, addVat=0, flat=0, flatVat=0; const addList=[];
+  if(menu){ basePP=menuBase(menu,guests); }
+  items.forEach(it=>{ if(menu&&menuSet.has(it.pid)) return; const p=prodOf(it); if(!p.exists) return; const sv=sellOf(p); const r=p.cat==='pijaca'?vD:vF;
+    if(p.cat==='storitve'&&p.unit!=='os'){ flat+=sv; flatVat+=sv*r; addList.push({p,sv,flat:true}); } else { addPP+=sv; addVat+=sv*r; addList.push({p,sv}); } });
+  const suggested=Math.max(0,basePP+addPP);
+  const ppNeto = mode==='perGuest' ? num(pr.perGuest) : suggested;
+  const ppVat = mode==='perGuest' ? ppNeto*vF : basePP*vF+addVat;
+  const neto = ppNeto*billing + flat;
+  const vat = ppVat*billing + flatVat;
+  const vatRate = neto>0 ? vat/neto : vF;
   const profit = neto-totalCost;
   const bySup = {};
   lines.forEach(l=>{ if(!l) return; (bySup[l.supplierId] ||= []).push(l); });
@@ -564,7 +592,7 @@ function calc(ev){
   const meatPieces = lines.filter(l=>l && l.cat==='meso' && l.unit==='kos').reduce((a,l)=>a+l.order,0);
   return { adults,kids,veg,meatP,allP,reservePct,apF,lines,meatKg,meatOrderKg,meatPieces,foodCost,drinksCost,extras,totalCost,billing,mode,markup,neto,vat,vatRate,bruto:neto+vat,profit,
     marginOfPrice: neto>0 ? profit/neto : 0, markupReal: totalCost>0 ? profit/totalCost : 0,
-    perGuest: billing>0 ? neto/billing : 0, costPerGuest: billing>0 ? totalCost/billing : 0, suggested, bySup };
+    perGuest: ppNeto, perGuestBr: ppNeto+ppVat, basePP, baseBr: basePP*(1+vF), addPP, addBr: addPP+addVat, flat, flatBr: flat+flatVat, addList, guests, costPerGuest: billing>0 ? totalCost/billing : 0, suggested, bySup };
 }
 
 /* ---------- text builders ---------- */
@@ -598,7 +626,7 @@ function offerText(ev,c){
     ev.client?`Naročnik: ${ev.client}`:'', `Datum: ${fmtDate(ev.date)}`, ev.location?`Lokacija: ${ev.location}`:'',
     `Gostje: ${c.adults} odraslih${c.kids?`, ${c.kids} otrok`:''}${c.veg?` (od tega ${c.veg} brez mesa)`:''}`,
     '', ...menuBlock(ev,c), '',
-    `Cena na osebo: ${eur(c.perGuest)} + DDV (${eur(c.perGuest*(1+c.vatRate))} z DDV)`,
+    `Cena na osebo: ${eur(c.perGuestBr)} z DDV (${eur(c.perGuest)} + DDV)`, c.flat?`Storitve (na dogodek): ${eur(c.flatBr)} z DDV`:'',
     c.kids?`Cena na otroka: ${eur(c.billing>0?c.neto/c.billing*num(st.childPriceFactor):0)} + DDV`:'',
     `Skupaj brez DDV: ${eur(c.neto)}`, `DDV: ${eur(c.vat)}`, `Skupaj z DDV: ${eur(c.bruto)}`,
     '', st.signature||st.company||''
@@ -640,7 +668,7 @@ function viewBody(){
   const allLoaded = Object.values(S.loaded).every(Boolean);
   if(!allLoaded) return `<p class="muted">Nalagam podatke …</p>`;
   switch(S.view.name){
-    case 'event': return S.events[S.view.id] ? eventView(S.events[S.view.id]) : eventsView();
+    case 'event': { const e=curEv(); return e ? eventView(e) : eventsView(); }
     case 'menus': return menusView();
     case 'catalog': return catalogView();
     default: return eventsView();
@@ -659,13 +687,15 @@ function eventsView(){
       <div class="evdate">${d&&!isNaN(d)?`<b>${d.getDate()}</b><span>${d.toLocaleDateString('sl-SI',{month:'short'})}</span>`:'<span>—</span>'}</div>
       <div style="min-width:0"><div class="nm serif" style="font-size:18px">${esc(x.e.name||'Brez imena')}</div>
       <div class="sub">${x.c.adults+x.c.kids} gostov${x.e.menuId&&S.menus[x.e.menuId]?' · '+esc(S.menus[x.e.menuId].name):''}</div>${S.settings.advanced?`<span class="pill st-${x.e.status||'povprasevanje'}" style="margin-top:4px">${STATUS[x.e.status||'povprasevanje']}</span>`:''}</div>
-      <div class="evmoney"><b>${eur(x.c.perGuest*(1+x.c.vatRate))}</b><div class="sub">na osebo</div></div></button>`;
+      <div class="evmoney"><b>${eur(x.c.perGuestBr)}</b><div class="sub">na osebo</div></div></button>`;
   };
   const adv=!!S.settings.advanced;
   const live=evs.filter(x=>['potrjeno','izvedeno','obracunano'].includes(x.e.status));
   const rev=live.reduce((a,x)=>a+x.c.neto,0), prof=live.reduce((a,x)=>a+x.c.profit,0);
   const open=evs.filter(x=>['povprasevanje','ponudba'].includes(x.e.status||'povprasevanje'));
   return `
+  ${S.draft?`<section class="card draft-card"><div><b>Nedokončan dogodek</b><div class="small muted">${esc(S.draft.ev.name||'Brez imena')} · ${num(S.draft.ev.adults)+num(S.draft.ev.children)} gostov</div><div class="small" style="margin-top:4px">Želiš nadaljevati ustvarjanje dogodka?</div></div>
+    <div class="row" style="flex-wrap:nowrap"><button type="button" class="btn sm" data-act="openDraft">Nadaljuj</button><button type="button" class="btn sm quiet" data-act="discardDraft">Zavrzi</button></div></section>`:''}
   <button type="button" class="btn big" data-act="newEvent">+ Nov dogodek</button>
   ${adv?`<div class="tiles"><div class="tile"><div class="k">Prihajajoči</div><div class="v">${up.length}</div></div><div class="tile"><div class="k">Odprte ponudbe</div><div class="v">${open.length}</div></div><div class="tile"><div class="k">Potrjeno brez DDV</div><div class="v">${eur(rev)}</div></div><div class="tile hero"><div class="k">Zaslužek</div><div class="v">${eur(prof)}</div></div></div>`:''}
   <section class="card"><h2>Prihajajoči</h2><div class="evlist">${up.length?up.map(row).join(''):`<div class="empty">Ni dogodkov. Klikni »+ Nov dogodek«.</div>`}</div></section>
@@ -680,36 +710,36 @@ function stepper(id,f,label,val){
     <button type="button" class="stp" data-act="step" data-f="${f}" data-d="1" aria-label="${label} več">+</button></div></div>`;
 }
 function liveList(ev,c){
-  const items=ev.items||[], apF=c.apF, mk=1+num(S.settings.markupPct)/100;
+  const items=ev.items||[], st=S.settings;
   const inEv=new Set(items.map(x=>x.pid));
   const m=ev.menuId&&S.menus[ev.menuId];
   const menuSet=new Set(m?(m.items||[]).map(x=>x.pid).filter(pid=>S.catalog[pid]):[]);
-  const vf=1+c.vatRate;
-  const sell=(pid)=>{ const has=items.some(it=>it.pid===pid); const w=has?items:[...items,{pid}], wo=items.filter(it=>it.pid!==pid); return (perPerson(w,apF).cost-perPerson(wo,apF).cost)*mk*(1+vatOf(S.catalog[pid])); };
+  const br=(pid)=>{ const p=normP({...S.catalog[pid],pid}); const r=(p.cat==='pijaca'?num(st.vatDrinks):num(st.vatFood))/100; return sellOf(p)*(1+r); };
   const row=(pid,label)=>{ const p=S.catalog[pid]; const on=inEv.has(pid);
     return `<button type="button" class="cl-row" aria-pressed="${on}" data-act="evPick" data-id="${pid}"><span class="cl-box">${CHECK}</span><span class="cl-name">${esc(p.name)}</span><span class="cl-price">${label(on)}</span></button>`; };
   let html='';
   if(m){
     const inMenu=[...menuSet].sort((a,b)=>Object.keys(CATS).indexOf(normP({...S.catalog[a]}).cat)-Object.keys(CATS).indexOf(normP({...S.catalog[b]}).cat));
-    html+=`<div class="cl-group"><div class="cl-cat">V meniju »${esc(m.name)}«</div>${inMenu.map(pid=>row(pid,on=>on?'<span class="incl">vključeno</span>':`<span class="muted">− ${eur(sell(pid))}</span>`)).join('')}</div>`;
+    html+=`<div class="cl-group"><div class="cl-cat">V meniju »${esc(m.name)}«</div>${inMenu.map(pid=>row(pid,on=>on?'<span class="incl">vključeno</span>':'<span class="muted small">ni izbrano</span>')).join('')}</div>`;
   }
   const rest=Object.keys(CATS).map(cat=>{
     const ps=Object.entries(S.catalog).filter(([pid,p])=>!menuSet.has(pid)&&normP({...p}).cat===cat).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
     if(!ps.length) return '';
-    return `<div class="cl-group"><div class="cl-cat">${m?'Dodatno · ':''}${CATS[cat]}</div>${ps.map(([pid])=>row(pid,on=>`${on?'':'+ '}${eur(sell(pid))}`)).join('')}</div>`;
+    return `<div class="cl-group"><div class="cl-cat">${m?'Dodatno · ':''}${CATS[cat]}</div>${ps.map(([pid,p])=>row(pid,on=>`${on?'':'+ '}${eur(br(pid))}${p.cat==='storitve'&&p.unit!=='os'?'<span class="small muted"> /dog.</span>':'<span class="small muted"> /os</span>'}`)).join('')}</div>`;
   }).join('');
   return html+rest;
 }
 function eventView(ev){
   const id=S.view.id, c=calc(ev), st=S.settings, pr=ev.pricing||{}, adv=!!st.advanced;
-  const items=ev.items||[], mk=1+num(st.markupPct)/100, vf=1+c.vatRate;
+  const items=ev.items||[];
+  const draft=!!(S.draft&&S.draft.id===id);
+  const past=!draft&&ev.date&&ev.date<=today();
   const menus=Object.entries(S.menus).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
   const m=ev.menuId&&S.menus[ev.menuId];
   const menuSet=new Set(m?(m.items||[]).map(x=>x.pid):[]);
-  const added=items.filter(it=>!menuSet.has(it.pid));
-  const addedPP = m ? (perPerson(items,c.apF).cost - perPerson(items.filter(it=>menuSet.has(it.pid)),c.apF).cost)*mk : 0;
+  const added=c.addList;
   const fixed=c.mode==='perGuest';
-  const ppBr=c.perGuest*vf, baseBr=Math.max(0,(c.suggested-addedPP))*vf, addBr=addedPP*vf;
+  const ppBr=c.perGuestBr, baseBr=c.baseBr, addBr=c.addBr;
   const noGuests=!c.adults&&!c.kids, noItems=!items.length;
   const orders=orderRows(c);
   const qtyRows=c.lines.map(l=>{ if(!l) return ''; const sg=!l.perMeat?suggestion(l.p):null;
@@ -723,7 +753,7 @@ function eventView(ev){
   return `
   <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
     <button type="button" class="btn sm quiet" data-act="nav" data-to="events">← Nazaj</button>
-    ${S.ui.confirm==='ev:'+id?`<div class="row" style="flex-wrap:nowrap"><span class="small">Izbrišem?</span><button type="button" class="btn sm danger" data-act="delEvent" data-id="${id}">Da</button><button type="button" class="btn sm quiet" data-act="cancelConfirm">Ne</button></div>`:`<button type="button" class="btn sm quiet" data-act="askConfirm" data-key="ev:${id}">Izbriši</button>`}
+    ${draft?'<button type="button" class="btn sm quiet" data-act="discardDraft">Zavrzi osnutek</button>':S.ui.confirm==='ev:'+id?`<div class="row" style="flex-wrap:nowrap"><span class="small">Izbrišem?</span><button type="button" class="btn sm danger" data-act="delEvent" data-id="${id}">Da</button><button type="button" class="btn sm quiet" data-act="cancelConfirm">Ne</button></div>`:`<button type="button" class="btn sm quiet" data-act="askConfirm" data-key="ev:${id}">Izbriši</button>`}
   </div>
 
   <div class="ev1 stack">
@@ -734,7 +764,7 @@ function eventView(ev){
   </section>
 
   <section class="card stack"><h3>1 · Osnovni meni</h3>
-    <div class="menu-cards">${menus.map(([mid,mm])=>{ const mp=menuPrice(mm); return `<button type="button" class="menu-card" aria-pressed="${ev.menuId===mid}" data-act="evMenu" data-v="${mid}"><b>${esc(mm.name||'Meni')}</b><span>${eur(mp.bruto)} / os</span></button>`;}).join('')}
+    <div class="menu-cards">${menus.map(([mid,mm])=>{ const b=menuBase(mm,c.guests)*(1+num(st.vatFood)/100); return `<button type="button" class="menu-card" aria-pressed="${ev.menuId===mid}" data-act="evMenu" data-v="${mid}"><b>${esc(mm.name||'Meni')}</b><span>${eur(b)} / os</span></button>`;}).join('')}
       <button type="button" class="menu-card" aria-pressed="${!m}" data-act="evMenu" data-v="custom"><b>Po meri</b><span>brez menija</span></button></div>
     ${!menus.length?'<p class="small muted" style="margin:0">Osnovne menije pripraviš v zavihku Meniji.</p>':''}
   </section>
@@ -746,12 +776,15 @@ function eventView(ev){
   <section class="card stack price-card">
     ${noGuests||noItems?`<div class="banner">${noGuests?'Vpiši število gostov. ':''}${noItems?'Izberi meni.':''}</div>`:''}
     <div class="price-big"><span>Cena na osebo</span><b>${eur(ppBr)}</b><span class="muted">z DDV</span></div>
-    ${m&&!fixed?`<div class="calc-line"><span>Meni ${esc(m.name)}</span><b>${eur(baseBr)}</b></div><div class="calc-line"><span>Dodatki (${added.length})</span><b>${addBr>=0?'+ ':'− '}${eur(Math.abs(addBr))}</b></div>`:''}
+    ${!fixed&&(m||added.length)?`${m?`<div class="calc-line"><span>Meni ${esc(m.name)}${(m.tiers||[]).length?` <span class="small muted">(${c.guests} oseb)</span>`:''}</span><b>${eur(baseBr)}</b></div>`:''}
+      ${c.addPP>0?`<div class="calc-line"><span>Dodatki na osebo</span><b>+ ${eur(addBr)}</b></div>`:''}
+      ${c.flat>0?`<div class="calc-line"><span>Storitve (na dogodek)</span><b>+ ${eur(c.flatBr)}</b></div>`:''}`:''}
     <div class="calc-line total"><span>Skupaj za ${c.adults+c.kids} gostov${c.kids?` <span class="small muted">(otrok ${Math.round(num(st.childPriceFactor)*100)} %)</span>`:''}</span><b>${eur(c.bruto)}</b></div>
-    <button type="button" class="btn big" data-act="copyOffer" ${noItems?'disabled':''}>Kopiraj ponudbo za stranko</button>
+    <div class="bigbtns">${draft?`<button type="button" class="btn big" data-act="createEvent">Shrani dogodek</button>`:`<button type="button" class="btn big" data-act="saveEvent">Shrani</button>`}
+      <button type="button" class="btn big ghost" data-act="copyOffer" ${noItems?'disabled':''}>Kopiraj ponudbo</button></div>
   </section>
 
-  <div class="pricebar" aria-live="polite"><div><span>Na osebo z DDV</span><b>${eur(ppBr)}</b></div><div class="pb-r"><span>${m&&!fixed&&added.length?`${eur(baseBr)} + ${eur(addBr)}`:`${c.adults+c.kids} gostov`}</span><b>${eur(c.bruto)}</b></div></div>
+  <div class="pricebar" aria-live="polite"><div><span>Na osebo z DDV</span><b>${eur(ppBr)}</b></div><div class="pb-r"><span>${c.adults+c.kids} gostov</span><b>${eur(c.bruto)}</b></div>${draft?'<button type="button" class="pb-btn" data-act="createEvent">Shrani</button>':''}</div>
 
   <details class="card" ${!ev.date&&!ev.client&&ev.name?'':''}><summary><h3>Stranka in datum</h3><span class="small muted">${esc([ev.client,ev.date?fmtDate(ev.date):''].filter(Boolean).join(' · ')||'dodaj')}</span></summary>
     <div class="stack"><div class="grid2">
@@ -764,7 +797,7 @@ function eventView(ev){
   </details>
 
   ${adv?`
-  <div class="adv-title">Več – samo zate</div>
+  <div class="adv-title"><span>Več – samo zate</span><button type="button" class="btn sm quiet" data-act="adv">✕ Zapri</button></div>
   <section class="card stack adv-card"><h3>Obračun</h3>
     <div><div class="total-line"><span>Hrana & pijača</span><span class="v">${eur(c.foodCost)}</span></div>
       <div class="total-line"><span>Dodatni stroški</span><span class="v">${eur(c.extras)}</span></div>
@@ -784,14 +817,14 @@ function eventView(ev){
     <div class="tw"><table class="slip"><tbody>${orders.map(l=>`<tr><td class="nm">${esc(l.name)}${l.pack>0?`<div class="sub">pakiranje ${qty(l.pack,l.unit)}</div>`:''}</td><td class="r"><span class="big">${qty(l.order,l.unit)}</span></td><td class="r num muted">${eur(l.cost)}</td></tr>`).join('')}</tbody><tfoot><tr><td colspan="2">Skupaj</td><td class="r"><span class="big">${eur(orders.reduce((a,l)=>a+l.cost,0))}</span></td></tr></tfoot></table></div></section>`:''}
   <section class="card stack adv-card"><div class="between"><h3>Besedilo ponudbe</h3>${ev.offerText?`<button type="button" class="linkbtn" data-act="resetOffer">Ponovno sestavi</button>`:''}</div>
     <textarea id="offer-txt" class="in" rows="10" data-k="ev.offerText">${esc(ev.offerText||offerText(ev,c))}</textarea></section>
-  ${afterRows?`<section class="card stack adv-card"><h3>Po dogodku</h3><p class="small muted" style="margin:0">Vpiši ostanke – naslednjič bodo količine bolj točne.</p>
+  ${afterRows&&past?`<section class="card stack adv-card"><h3>Po dogodku</h3><p class="small muted" style="margin:0">Vpiši ostanke – naslednjič bodo količine bolj točne.</p>
     <div class="tw"><table class="slip"><tbody>${afterRows}</tbody></table></div>
     <button type="button" class="btn sm" style="align-self:flex-start" data-act="learn">${a.learnedAt?'Posodobi':'Shrani'}</button></section>`:''}
   `:`<button type="button" class="more-link" data-act="adv">Več možnosti (obračun, naročilo, količine) →</button>`}
   </div>`;
 }
 function listText(rows){ return rows.filter(l=>l.order>0).map(l=>`${l.name} – ${qty(l.order,l.unit)}`).join('\n'); }
-function orderRows(c){ const order=Object.keys(CATS); return c.lines.filter(l=>l&&l.order>0).sort((x,y)=>order.indexOf(x.cat)-order.indexOf(y.cat)); }
+function orderRows(c){ const order=Object.keys(CATS); return c.lines.filter(l=>l&&l.order>0&&!l.svc).sort((x,y)=>order.indexOf(x.cat)-order.indexOf(y.cat)); }
 
 /* ----- checklist ----- */
 const CHECK='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>';
@@ -816,7 +849,7 @@ function checklist(items,attrs,apF=1){
 /* ----- menus ----- */
 function perPerson(items,apF=1){
   const st=S.settings, R=1+num(st.reservePct)/100; let meatKg=0, cost=0, drinks=0;
-  const ps=(items||[]).map(it=>({it,p:prodOf(it)})).filter(x=>x.p.exists);
+  const ps=(items||[]).map(it=>({it,p:prodOf(it)})).filter(x=>(x.p.exists||x.it.snap)&&x.p.cat!=='storitve');
   const g=(it,p)=>(it.gpp===undefined||it.gpp===null||it.gpp==='')?num(p.gpp):num(it.gpp);
   const by={};
   ps.forEach(({it,p})=>{ if(p.perMeat) return; const af=(p.cat==='meso'||p.cat==='priloge')?apF:1; const need=(p.unit==='kg'? g(it,p)*(1+num(p.bonePct)/100)/1000*R : g(it,p)*R)*af; if(p.cat==='meso'&&p.unit==='kg') meatKg+=need; const c=need*num(p.price); cost+=c; by[it.pid]=c; if(p.cat==='pijaca') drinks+=c; });
@@ -831,22 +864,28 @@ function menuPrice(m){
 }
 function menusView(){
   const list=Object.entries(S.menus).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+  const vF=1+num(S.settings.vatFood)/100;
   const cards=list.map(([id,m])=>{
-    const sel=new Set((m.items||[]).map(it=>it.pid)); const mp=menuPrice(m); const confirm=S.ui.confirm==='menu:'+id;
-    const groups=checklist(m.items||[],pid=>`data-act="menuPick" data-id="${id}" data-pid="${pid}"`);
+    const sel=new Set((m.items||[]).map(it=>it.pid)); const confirm=S.ui.confirm==='menu:'+id;
+    const cost=perPerson(m.items||[]).cost; const base=menuBase(m,0);
+    const groups=Object.keys(CATS).filter(c=>c!=='storitve').map(cat=>{
+      const ps=Object.entries(S.catalog).filter(([,p])=>normP({...p}).cat===cat).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+      if(!ps.length) return '';
+      return `<div class="cl-group"><div class="cl-cat">${CATS[cat]}</div>${ps.map(([pid,p])=>`<button type="button" class="cl-row" aria-pressed="${sel.has(pid)}" data-act="menuPick" data-id="${id}" data-pid="${pid}"><span class="cl-box">${CHECK}</span><span class="cl-name">${esc(p.name)}</span><span></span></button>`).join('')}</div>`;
+    }).join('');
+    const tiers=(m.tiers||[]).map((t,i)=>`<div class="row tier" style="gap:6px;flex-wrap:nowrap"><span class="small muted" style="white-space:nowrap">od</span><input id="m-tm-${id}-${i}" class="in num-in" style="flex:1" inputmode="numeric" aria-label="Od števila oseb" data-k="menu.tmin" data-id="${id}" data-i="${i}" value="${inVal(t.min)}"><span class="small muted" style="white-space:nowrap">oseb</span><input id="m-tp-${id}-${i}" class="in num-in" style="flex:1.2" inputmode="decimal" aria-label="Cena na osebo" data-k="menu.tprice" data-id="${id}" data-i="${i}" value="${inVal(t.price)}"><span class="small muted">€</span><button type="button" class="icon-btn" aria-label="Odstrani" data-act="rmTier" data-id="${id}" data-i="${i}">${X_ICON}</button></div>`).join('');
+    const open=S.ui.openMenu===id;
     return `<section class="card stack">
-      <div class="between"><label class="f" for="m-n-${id}" style="flex:1;min-width:200px"><span>Ime menija</span><input id="m-n-${id}" class="in serif" style="font-size:18px;font-weight:700" data-k="menu.name" data-id="${id}" value="${esc(m.name||'')}"></label>
-        ${confirm?`<div class="row"><button type="button" class="btn sm danger" data-act="delMenu" data-id="${id}">Izbriši</button><button type="button" class="btn sm quiet" data-act="cancelConfirm">Prekliči</button></div>`:`<button type="button" class="btn sm quiet" data-act="askConfirm" data-key="menu:${id}">Izbriši</button>`}</div>
-      ${groups?`<details class="sub-details"><summary>Jedi v meniju <span class="muted">· ${(m.items||[]).filter(x=>S.catalog[x.pid]).length} izbranih</span></summary><div class="checklist">${groups}</div></details>`:'<p class="small muted">Cenik je prazen.</p>'}
-      <div class="grid2" style="align-items:end">
-        <label class="f" for="m-p-${id}"><span>Cena na osebo brez DDV (prazno = predlog)</span><input id="m-p-${id}" class="in num-in" inputmode="decimal" data-k="menu.price" data-id="${id}" placeholder="${inVal(Math.round(mp.suggested*100)/100)}" value="${inVal(m.price)}"></label>
-        <div class="tiles" style="grid-template-columns:repeat(2,minmax(0,1fr))">
-          <div class="tile"><div class="k">Strošek / os</div><div class="v">${eur(mp.cost)}</div></div>
-          <div class="tile hero"><div class="k">Cena / os z DDV</div><div class="v">${eur(mp.bruto)}</div></div>
-        </div></div>
+      <div class="between"><input id="m-n-${id}" class="in title-in" style="flex:1;min-width:180px" aria-label="Ime menija" data-k="menu.name" data-id="${id}" value="${esc(m.name||'')}">
+        ${confirm?`<div class="row"><button type="button" class="btn sm danger" data-act="delMenu" data-id="${id}">Izbriši</button><button type="button" class="btn sm quiet" data-act="cancelConfirm">Ne</button></div>`:`<button type="button" class="btn sm quiet" data-act="askConfirm" data-key="menu:${id}">Izbriši</button>`}</div>
+      <label class="f" for="m-p-${id}"><span>Fiksna cena na osebo brez DDV (€)</span><input id="m-p-${id}" class="in num-in" style="font-size:20px;font-weight:800" inputmode="decimal" data-k="menu.price" data-id="${id}" placeholder="vpiši ceno" value="${inVal(m.price)}"></label>
+      <div class="small muted">Z DDV ${eur(base*vF)} / os · tvoj strošek ${eur(cost)} / os${base>0?` · marža ${nf((base-cost)/base*100,0)} %`:''}</div>
+      <div class="sub-details" style="padding-top:10px"><div class="small" style="font-weight:700;margin-bottom:6px">Cena glede na število oseb <span class="muted" style="font-weight:400">(neobvezno)</span></div>
+        <div class="stack" style="gap:6px">${tiers}<button type="button" class="btn sm quiet" style="align-self:flex-start" data-act="addTier" data-id="${id}">+ Dodaj ceno za večje skupine</button></div></div>
+      <details class="sub-details" ${open?'open':''} data-menu="${id}"><summary>Jedi v meniju <span class="muted">· ${(m.items||[]).filter(x=>S.catalog[x.pid]).length} izbranih</span></summary><div class="checklist">${groups||'<p class="small muted">Cenik je prazen.</p>'}</div></details>
     </section>`;}).join('');
   return `<div class="between"><h1>Meniji</h1><button type="button" class="btn" data-act="newMenu">+ Nov meni</button></div>
-  <p class="small muted" style="margin:0;max-width:70ch">Sestavi glavne menije. Pri dogodku izbereš meni in nato samo odkljukaš ali dodaš jedi – cena na osebo se sproti prišteje.</p>
+  <p class="small muted" style="margin:0;max-width:70ch">Glavni meni ima fiksno ceno na osebo (lahko tudi nižjo za večje skupine). Vse, kar stranka doda, se prišteje po prodajni ceni iz Cenika.</p>
   ${cards||'<div class="card empty">Ni menijev. Dodaj prvega.</div>'}`;
 }
 function applyMenu(ev,mid){
@@ -871,14 +910,16 @@ function catalogView(){
     return `<tr>
     <td data-l="Jed"><input id="c-n-${id}" class="in cell" style="min-width:140px" aria-label="Ime" data-k="cat.name" data-id="${id}" value="${esc(p.name||'')}"></td>
     <td data-l="Vrsta"><select id="c-c-${id}" class="in cell" aria-label="Vrsta" data-k="cat.cat" data-id="${id}">${Object.entries(CATS).map(([k,l])=>`<option value="${k}" ${p.cat===k?'selected':''}>${l}</option>`).join('')}</select></td>
-    <td class="r" data-l="Na osebo"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:flex-end"><input id="c-g-${id}" class="in cell num-in" style="width:70px" inputmode="decimal" aria-label="Na osebo" data-k="cat.gpp" data-id="${id}" value="${inVal(p.gpp)}"><select id="c-u-${id}" class="in cell" style="width:auto" aria-label="Enota" data-k="cat.unit" data-id="${id}">${Object.entries(UNIT_LABELS).map(([k,l])=>`<option value="${k}" ${p.unit===k?'selected':''}>${l}</option>`).join('')}</select></div></td>
+    <td class="r" data-l="${p.cat==='storitve'?'Obračun':'Na osebo'}"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:flex-end">${p.cat==='storitve'?`<select id="c-u-${id}" class="in cell" style="width:auto" aria-label="Obračun" data-k="cat.unit" data-id="${id}">${Object.entries(SVC_UNITS).map(([k,l])=>`<option value="${k}" ${p.unit===k?'selected':''}>${l}</option>`).join('')}</select>`:`<input id="c-g-${id}" class="in cell num-in" style="width:70px" inputmode="decimal" aria-label="Na osebo" data-k="cat.gpp" data-id="${id}" value="${inVal(p.gpp)}"><select id="c-u-${id}" class="in cell" style="width:auto" aria-label="Enota" data-k="cat.unit" data-id="${id}">${Object.entries(UNIT_LABELS).map(([k,l])=>`<option value="${k}" ${p.unit===k?'selected':''}>${l}</option>`).join('')}</select>`}</div></td>
     <td class="r" data-l="Nabavna cena"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:flex-end"><input id="c-p-${id}" class="in cell num-in" style="width:76px" inputmode="decimal" aria-label="Nabavna cena" data-k="cat.price" data-id="${id}" value="${inVal(p.price)}"><span class="sub">€/${p.perMeat?'kg':UNITS[p.unit]}</span></div></td>
+    <td class="r" data-l="Prodajna cena"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:flex-end"><input id="c-s-${id}" class="in cell num-in" style="width:76px;font-weight:700" inputmode="decimal" aria-label="Prodajna cena brez DDV" data-k="cat.sell" data-id="${id}" placeholder="${inVal(Math.round(sellOf({...p,pid:id,sell:0})*100)/100)}" value="${inVal(p.sell||'')}"><span class="sub">€/${p.cat==='storitve'&&p.unit!=='os'?'dog.':'os'}</span></div></td>
     ${S.settings.advanced?`<td class="r" data-l="Kost +%"><input id="c-b-${id}" class="in cell num-in" style="width:60px" inputmode="decimal" aria-label="Kost %" placeholder="0" data-k="cat.bonePct" data-id="${id}" value="${inVal(p.bonePct||'')}"></td><td class="r" data-l="Pakiranje"><input id="c-k-${id}" class="in cell num-in" style="width:64px" inputmode="decimal" aria-label="Pakiranje" placeholder="—" data-k="cat.pack" data-id="${id}" value="${inVal(p.pack||'')}"></td>`:''}
     <td class="r">${confirm?`<button type="button" class="btn sm danger" data-act="delCat" data-id="${id}">Izbriši</button>`:`<button type="button" class="icon-btn" aria-label="Izbriši ${esc(p.name)}" data-act="askConfirm" data-key="cat:${id}">${X_ICON}</button>`}</td></tr>`;}).join('');
   const f=(id,k,l,v)=>`<label class="f" for="${id}"><span>${l}</span><input id="${id}" class="in num-in" inputmode="decimal" data-k="set.${k}" value="${inVal(v)}"></label>`;
-  return `<div class="between"><h1>Cenik</h1><button type="button" class="btn" data-act="newCat">+ Nova jed</button></div>
-  <section class="card"><div class="tw"><table class="slip cat-table"><thead><tr><th>Jed / artikel</th><th>Vrsta</th><th class="r">Koliko na osebo</th><th class="r">Nabavna cena</th>${S.settings.advanced?'<th class="r">Kost +%</th><th class="r">Pakiranje</th>':''}<th></th></tr></thead>
-  <tbody>${rows||`<tr><td colspan="5" class="empty">Cenik je prazen. Dodaj prvo jed.</td></tr>`}</tbody></table></div></section>
+  return `<div class="between"><h1>Cenik</h1><button type="button" class="btn" data-act="newCat">+ Nova jed / storitev</button></div>
+  <p class="small muted" style="margin:0;max-width:70ch"><b>Prodajna cena</b> je cena brez DDV, ki se prišteje, ko jed ali storitev dodaš kot dodatek. Če je prazna, se izračuna iz nabavne cene in pribitka. Storitve (npr. natakar, postavitev) obračunaš na dogodek ali na osebo.</p>
+  <section class="card"><div class="tw"><table class="slip cat-table"><thead><tr><th>Jed / artikel</th><th>Vrsta</th><th class="r">Koliko na osebo</th><th class="r">Nabavna cena</th><th class="r">Prodajna cena</th>${S.settings.advanced?'<th class="r">Kost +%</th><th class="r">Pakiranje</th>':''}<th></th></tr></thead>
+  <tbody>${rows||`<tr><td colspan="6" class="empty">Cenik je prazen. Dodaj prvo jed.</td></tr>`}</tbody></table></div></section>
   <details class="card"><summary><h3>Nastavitve cen</h3><span class="small muted">pribitek ${inVal(st.markupPct)} % · DDV ${inVal(st.vatFood)} %</span></summary>
     <div class="grid3">${f('set-markup','markupPct','Pribitek za predlog cene (%)',st.markupPct)}${f('set-vatf','vatFood','DDV hrana (%)',st.vatFood)}${f('set-vatd','vatDrinks','DDV pijača (%)',st.vatDrinks)}
     ${f('set-res','reservePct','Rezerva (%)',st.reservePct)}${f('set-cf','childFactor','Otrok poje (× odraslega)',st.childFactor)}${f('set-cpf','childPriceFactor','Otrok plača (× odraslega)',st.childPriceFactor)}
@@ -929,8 +970,8 @@ function settingsView(){
 }
 
 /* ---------- mutations ---------- */
-function curEv(){ return S.events[S.view.id]; }
-function touchEv(){ const ev=curEv(); if(!ev) return; ev.updatedAt=new Date().toISOString(); saveLater('events',S.view.id); }
+function curEv(){ return S.events[S.view.id] || (S.draft&&S.draft.id===S.view.id?S.draft.ev:null); }
+function touchEv(){ const ev=curEv(); if(!ev) return; if(S.draft&&S.draft.id===S.view.id){ saveDraft(); return; } ev.updatedAt=new Date().toISOString(); saveLater('events',S.view.id); }
 function setK(el){
   const k=el.dataset.k; const v = el.type==='checkbox' ? el.checked : el.value;
   const ev=curEv(); const i=+el.dataset.i;
@@ -955,9 +996,11 @@ function setK(el){
   }
   if(k.startsWith('cat.')){
     const id=el.dataset.id, p=S.catalog[id]; if(!p) return; const f=k.slice(4);
-    p[f] = ['gpp','bonePct','price','pack'].includes(f) ? Math.max(0,num(v)) : v;
+    p[f] = ['gpp','bonePct','price','pack','sell'].includes(f) ? Math.max(0,num(v)) : v;
+    if(f==='cat'){ if(v==='storitve'&&!SVC_UNITS[p.unit]) p.unit='dog'; if(v!=='storitve'&&SVC_UNITS[p.unit]) p.unit='kg'; render(); }
     saveLater('catalog',id); return;
   }
+  if(k==='menu.tmin'||k==='menu.tprice'){ const m=S.menus[el.dataset.id]; if(!m) return; const t=(m.tiers||[])[i]; if(!t) return; if(k==='menu.tmin') t.min=Math.max(0,Math.round(num(v))); else t.price=Math.max(0,num(v)); saveLater('menus',el.dataset.id); return; }
   if(k.startsWith('menu.')){ const id=el.dataset.id, m=S.menus[id]; if(!m) return; const f=k.slice(5); m[f]= f==='price' ? (String(v).trim()===''||num(v)<=0?null:num(v)) : v; saveLater('menus',id); return; }
   if(k.startsWith('sup.')){ const id=el.dataset.id; if(!S.suppliers[id]) return; S.suppliers[id][k.slice(4)]=v; saveLater('suppliers',id); return; }
   if(k.startsWith('set.')){
@@ -969,8 +1012,8 @@ function setK(el){
 }
 function newEvent(data={}){
   const id=uid();
-  S.events[id]={ name:'Nov dogodek', date:'', client:'', location:'', status:'povprasevanje', adults:50, children:0, vegetarians:0, appetite:'obicajen', reservePct:null, items:[], extras:[], pricing:{mode:'markup'}, createdAt:new Date().toISOString(), ...data };
-  saveLater('events',id,10);
+  if(S.draft){ S.view={name:'event',id:S.draft.id}; saveView(); render(); toast('Najprej shrani ali zavrzi nedokončan dogodek.'); return; }
+  S.draft={id, ev:{ name:'', date:'', client:'', location:'', status:'povprasevanje', adults:0, children:0, vegetarians:0, appetite:'obicajen', reservePct:null, items:[], extras:[], pricing:{mode:'auto'}, createdAt:new Date().toISOString(), ...data }}; saveDraft();
   S.view={name:'event',id,tab:'ponudba'}; saveView(); render(); window.scrollTo(0,0);
 }
 function itemFromPid(pid){ const p=S.catalog[pid]; return { pid, snap:{name:p.name,cat:p.cat,unit:p.unit,gpp:p.gpp,bonePct:p.bonePct,price:p.price,pack:p.pack,supplierId:p.supplierId} }; }
@@ -1133,6 +1176,10 @@ $app.addEventListener('click', e=>{
   const go=v=>{ S.view=v; S.ui.confirm=null; saveView(); render(); window.scrollTo(0,0); };
   switch(act){
     case 'nav': go({name:b.dataset.to}); break;
+    case 'openDraft': if(S.draft) go({name:'event',id:S.draft.id}); break;
+    case 'discardDraft': S.draft=null; saveDraft(); go({name:'events'}); toast('Osnutek zavržen.'); break;
+    case 'createEvent': { const c=calc(ev); if(!c.adults&&!c.kids){ toast('Najprej vpiši število gostov.'); document.getElementById('ev-adults')?.focus(); break; } if(!(ev.items||[]).length&&!ev.menuId){ toast('Izberi meni ali jedi.'); break; } const id=S.draft.id; ev.name=ev.name||'Dogodek '+(ev.date?fmtDate(ev.date):new Date().toLocaleDateString('sl-SI')); S.events[id]=ev; S.draft=null; saveDraft(); saveLater('events',id,10); go({name:'events'}); toast('Dogodek ustvarjen.'); break; }
+    case 'saveEvent': { for(const [key,t] of pending){ clearTimeout(t); const [cc,id]=key.split('/'); flush(cc,id); } go({name:'events'}); toast('Shranjeno.'); break; }
     case 'dp': dpOpen(b.dataset.t,b); break;
     case 'login': { const pv=new firebase.auth.GoogleAuthProvider(); fbAuth.signInWithPopup(pv).catch(e=>{ if(/popup|operation-not-supported|web-storage/.test(e.code||'')) fbAuth.signInWithRedirect(pv); else showLogin('Prijava ni uspela: '+(e.message||e.code)); }); break; }
     case 'logout': fbAuth&&fbAuth.signOut().then(()=>location.reload()); break;
@@ -1165,9 +1212,11 @@ $app.addEventListener('click', e=>{
     case 'learn': learn(); break;
     case 'qCat': { const q=quickState(), v=b.dataset.v; q.cats=q.cats.includes(v)?q.cats.filter(x=>x!==v):[...q.cats,v]; render(); break; }
     case 'evPick': { const pid=b.dataset.id; ev.items=ev.items||[]; const i=ev.items.findIndex(it=>it.pid===pid); if(i>=0){ ev.items.splice(i,1); if(ev.after&&ev.after.items){ const n={}; Object.entries(ev.after.items).forEach(([k,v])=>{k=+k; if(k<i) n[k]=v; else if(k>i) n[k-1]=v;}); ev.after.items=n; } } else ev.items.push(itemFromPid(pid)); touchEv(); render(); break; }
-    case 'newMenu': { const id=uid(); S.menus[id]={name:'Nov meni',items:[],price:null}; saveLater('menus',id,10); render(); setTimeout(()=>{const el=document.getElementById('m-n-'+id); el?.focus(); el?.select();},0); break; }
+    case 'newMenu': { const id=uid(); S.menus[id]={name:'Nov meni',items:[],price:null,tiers:[]}; S.ui.openMenu=id; saveLater('menus',id,10); render(); setTimeout(()=>{const el=document.getElementById('m-n-'+id); el?.focus(); el?.select();},0); break; }
+    case 'addTier': { const m=S.menus[b.dataset.id]; m.tiers=m.tiers||[]; const last=m.tiers[m.tiers.length-1]; m.tiers.push({min:last?num(last.min)+50:50, price:last?Math.max(0,num(last.price)-1):Math.max(0,num(m.price)-1)}); saveLater('menus',b.dataset.id); render(); break; }
+    case 'rmTier': { const m=S.menus[b.dataset.id]; m.tiers.splice(+b.dataset.i,1); saveLater('menus',b.dataset.id); render(); break; }
     case 'delMenu': removeDoc('menus',b.dataset.id); S.ui.confirm=null; render(); break;
-    case 'menuPick': { const m=S.menus[b.dataset.id]; if(!m) break; m.items=m.items||[]; const pid=b.dataset.pid; const i=m.items.findIndex(x=>x.pid===pid); if(i>=0) m.items.splice(i,1); else m.items.push({pid}); saveLater('menus',b.dataset.id); render(); break; }
+    case 'menuPick': { S.ui.openMenu=b.dataset.id; const m=S.menus[b.dataset.id]; if(!m) break; m.items=m.items||[]; const pid=b.dataset.pid; const i=m.items.findIndex(x=>x.pid===pid); if(i>=0) m.items.splice(i,1); else m.items.push({pid}); saveLater('menus',b.dataset.id); render(); break; }
     case 'evMenu': { const v=b.dataset.v; if(v==='custom'){ ev.menuId=null; touchEv(); render(); break; } applyMenu(ev,v); touchEv(); render();  break; }
     case 'qMenu': { const q=quickState(); q.menuId = b.dataset.v==='custom'?null:b.dataset.v; render(); break; }
     case 'evCat': { const v=b.dataset.v; ev.cats=[...(ev.cats||[]),v]; touchEv(); render(); break; }
